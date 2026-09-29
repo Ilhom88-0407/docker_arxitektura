@@ -1,0 +1,1669 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Docker daftari</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Kalam:wght@300;400;700&family=Courier+Prime:wght@400;700&display=swap">
+<style>
+/* Layout: katakli maktab daftari varaqlari stol ustida ketma-ket; har varaqda chap qizil hoshiya chizig'i. Bitta "qog'oz" ko'rinishi — ataylab bir mavzuli. */
+:root{
+  color-scheme: light;
+  --desk:#d8d2c3;
+  --paper:#fcfbf6;
+  --grid:rgba(70,120,190,.16);
+  --margin:#e0706a;
+  --ink:#1d3580;          /* ko'k sharikli ruchka */
+  --ink-soft:#3d56a3;
+  --red:#c2362b;          /* qizil ruchka */
+  --green:#23764a;        /* yashil ruchka */
+  --pencil:#55555a;
+  --marker:rgba(255,236,80,.75);
+  --marker-pink:rgba(255,150,190,.5);
+  --sticky:#fff39a;
+  --tape:rgba(235,225,190,.75);
+  --print:#2b2b2b;
+  --f-head:"Caveat", "Segoe Print", "Comic Sans MS", cursive;
+  --f-body:"Kalam", "Segoe Print", "Comic Sans MS", cursive;
+  --f-code:"Courier Prime", "Courier New", monospace;
+  --cell:24px;
+}
+*{box-sizing:border-box}
+body{background:var(--desk);color:var(--ink);font-family:var(--f-body);font-size:1.12rem;line-height:1.75;padding-inline:16px;padding-block:28px 60px;
+  background-image:radial-gradient(rgba(0,0,0,.035) 1px,transparent 1px);background-size:5px 5px}
+.sheet{position:relative;max-width:880px;margin:0 auto 44px;background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:var(--cell) var(--cell);
+  padding:34px 34px 48px 78px;box-shadow:0 1px 2px rgba(0,0,0,.12),0 10px 28px rgba(60,50,30,.18);border-radius:2px}
+.sheet::before{content:"";position:absolute;top:0;bottom:0;left:58px;width:2px;background:var(--margin);opacity:.75}
+.sheet:nth-child(even){transform:rotate(.25deg)}
+.sheet:nth-child(odd){transform:rotate(-.2deg)}
+.sheet-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;font-family:var(--f-head);font-size:1.45rem;color:var(--pencil)}
+.sheet-no{color:var(--red);font-weight:700}
+h1,h2,h3{font-family:var(--f-head);font-weight:700;line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.6rem,7vw,3.8rem);color:var(--ink);margin-top:10px}
+h2{font-size:clamp(2.1rem,5.5vw,2.9rem);color:var(--red);margin:14px 0 6px;text-decoration:underline wavy var(--red);text-decoration-thickness:1.5px;text-underline-offset:8px}
+h3{font-size:1.85rem;color:var(--green);margin:26px 0 4px}
+h3 .n{color:var(--red);margin-right:6px}
+p{margin:.35em 0 .7em;max-width:68ch}
+ul,ol{margin:.2em 0 .8em;padding-left:1.4em;max-width:68ch}
+li{margin:.15em 0}
+ul li::marker{content:"— ";color:var(--red)}
+ol li::marker{color:var(--red);font-weight:700}
+b,strong{font-weight:700;color:var(--ink)}
+.hl{background:linear-gradient(100deg,transparent 2%,var(--marker) 4%,var(--marker) 96%,transparent 98%);padding:0 .15em;border-radius:3px}
+.hl-p{background:linear-gradient(100deg,transparent 2%,var(--marker-pink) 4%,var(--marker-pink) 96%,transparent 98%);padding:0 .15em}
+.red{color:var(--red)} .green{color:var(--green)} .pencil{color:var(--pencil)}
+.circle{border:2px solid var(--red);border-radius:50% 45% 55% 48%;padding:0 .35em}
+.term{font-family:var(--f-code);font-size:.92em;color:var(--print);background:rgba(0,0,0,.05);padding:0 .25em;border-radius:3px;white-space:nowrap}
+.lead{font-size:1.25rem}
+.def{border:2px solid var(--ink);border-radius:14px 6px 16px 8px;padding:10px 16px;margin:12px 0 16px;max-width:70ch}
+.def .lbl{font-family:var(--f-head);font-size:1.4rem;color:var(--red);font-weight:700}
+.sticky{background:var(--sticky);color:var(--print);padding:14px 18px 16px;max-width:360px;box-shadow:2px 4px 10px rgba(0,0,0,.15);transform:rotate(1.6deg);font-family:var(--f-head);font-size:1.45rem;line-height:1.3;position:relative}
+.sticky::before{content:"";position:absolute;top:-10px;left:40%;width:70px;height:20px;background:var(--tape);transform:rotate(-4deg)}
+.sticky.l{transform:rotate(-1.8deg)}
+.row{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start}
+.row>*{min-width:0;flex:1 1 280px}
+.fig{margin:16px 0 8px;overflow-x:auto}
+.fig svg{display:block;width:100%;height:auto;min-width:560px}
+.fig.small svg{min-width:0}
+.cap{font-family:var(--f-head);font-size:1.35rem;color:var(--pencil);margin:2px 0 14px}
+.cap::before{content:"↑ ";color:var(--red)}
+pre{position:relative;font-family:var(--f-code);font-size:.9rem;line-height:1.5;color:var(--print);background:#fffffb;border:1px solid rgba(0,0,0,.1);box-shadow:0 2px 6px rgba(0,0,0,.08);padding:16px 18px;margin:14px 0 16px;overflow-x:auto;max-width:100%;transform:rotate(-.3deg)}
+pre::before,pre::after{content:"";position:absolute;top:-9px;width:64px;height:18px;background:var(--tape)}
+pre::before{left:14px;transform:rotate(-6deg)} pre::after{right:14px;transform:rotate(5deg)}
+pre .c{color:#7b7b80} pre .k{color:var(--red);font-weight:700} pre .s{color:var(--green)}
+.tbl{overflow-x:auto;margin:12px 0 18px}
+table{border-collapse:collapse;font:inherit;color:inherit;min-width:520px;width:100%}
+th,td{border-bottom:1.5px solid rgba(29,53,128,.35);padding:5px 10px;text-align:left;vertical-align:top}
+th{font-family:var(--f-head);font-size:1.4rem;color:var(--red);border-bottom:2px solid var(--red)}
+td:first-child{font-family:var(--f-code);font-size:.9rem;color:var(--print);white-space:nowrap}
+.marg{position:absolute;left:6px;width:46px;text-align:center;font-family:var(--f-head);font-size:2rem;color:var(--red);font-weight:700;line-height:1}
+.box-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:12px 0}
+.card{border:2px dashed var(--ink-soft);border-radius:10px 16px 8px 14px;padding:8px 14px}
+.card h4{font-family:var(--f-head);font-size:1.6rem;margin:0;color:var(--green)}
+.card p{margin:.2em 0 .3em;font-size:1.02rem}
+.sign{font-family:var(--f-head);font-size:1.6rem;color:var(--pencil);text-align:right;margin-top:20px}
+.toc{columns:2 240px;margin:10px 0}
+.toc li{break-inside:avoid}
+/* SVG chizmalar */
+svg text{font-family:var(--f-head);fill:var(--ink);font-size:20px}
+svg .t-red{fill:var(--red)} svg .t-green{fill:var(--green)} svg .t-pen{fill:var(--pencil)}
+svg .t-code{font-family:var(--f-code);font-size:14px;fill:var(--print)}
+svg .t-big{font-size:26px;font-weight:700}
+svg .t-sm{font-size:17px}
+svg .ln{stroke:var(--ink);stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+svg .ln-red{stroke:var(--red);stroke-width:2.2;fill:none;stroke-linecap:round}
+svg .ln-green{stroke:var(--green);stroke-width:2.2;fill:none;stroke-linecap:round}
+svg .ln-pen{stroke:var(--pencil);stroke-width:1.6;fill:none;stroke-dasharray:6 5}
+svg .dash{stroke-dasharray:8 6}
+svg .f-y{fill:var(--marker)} svg .f-p{fill:var(--marker-pink)} svg .f-b{fill:rgba(90,140,220,.18)} svg .f-g{fill:rgba(50,160,90,.18)} svg .f-r{fill:rgba(220,80,70,.16)} svg .f-paper{fill:var(--paper)}
+svg .ah{fill:var(--ink)} svg .ah-red{fill:var(--red)} svg .ah-green{fill:var(--green)}
+.rough{filter:url(#rough)}
+@media (max-width:640px){
+  body{padding-inline:10px}
+  .sheet{padding:26px 18px 36px 44px}
+  .sheet::before{left:32px}
+  .marg{left:0;width:30px;font-size:1.5rem}
+  body{font-size:1.05rem}
+}
+@media (prefers-reduced-motion:no-preference){
+  .sticky{transition:transform .25s}
+  .sticky:hover{transform:rotate(0) scale(1.02)}
+}
+main{counter-reset:sheet}
+.sheet:not(.cover){counter-increment:sheet}
+.sheet-no::before{content:counter(sheet) "-varaq"}
+.cover-title{padding-block:40px 26px;border-bottom:2px solid var(--red);margin-bottom:10px}
+.toc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:4px 34px}
+.toc-part{font-family:var(--f-head);font-size:1.55rem;color:var(--green);font-weight:700;margin:12px 0 0}
+.toc-list{margin:0 0 6px}
+a{color:var(--ink);text-decoration:none;border-bottom:1.5px dashed var(--ink-soft)}
+a:hover{color:var(--red);border-bottom-color:var(--red)}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+.quiz details{border-bottom:1.5px dashed rgba(29,53,128,.35);padding:8px 0;max-width:72ch}
+.quiz summary{cursor:pointer;font-weight:700}
+.quiz summary::marker{color:var(--red)}
+.quiz details p{color:var(--green);margin:.4em 0 .2em 1.2em}
+.glossary{display:grid;grid-template-columns:minmax(150px,230px) 1fr;gap:6px 20px;margin:10px 0}
+.glossary dt{font-family:var(--f-head);font-size:1.4rem;color:var(--red);font-weight:700;line-height:1.3}
+.glossary dd{margin:0;border-bottom:1px dashed rgba(29,53,128,.25);padding-bottom:4px}
+@media (max-width:640px){.glossary{grid-template-columns:1fr;gap:0}.glossary dd{margin-bottom:8px}}
+</style>
+
+<!-- umumiy chizma vositalari: "qo'lda chizilgan" titroq chiziq filtri va strelkalar -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="7" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="3.2" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <marker id="ar" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path class="ah" d="M1,1 L11,6 L1,11 L4,6 Z"/></marker>
+    <marker id="ar-red" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path class="ah-red" d="M1,1 L11,6 L1,11 L4,6 Z"/></marker>
+    <marker id="ar-green" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path class="ah-green" d="M1,1 L11,6 L1,11 L4,6 Z"/></marker>
+  </defs>
+</svg>
+
+</head>
+<body>
+<main>
+
+<!-- ============================ MUQOVA ============================ -->
+<section class="sheet cover" id="muqova">
+  <div class="sheet-head"><span class="pencil">Daftar</span><span>29-sentabr, 2026-yil</span></div>
+  <div class="cover-title">
+    <p class="pencil" style="font-family:var(--f-head);font-size:1.6rem;margin:0">Fan: DevOps / konteynerlashtirish</p>
+    <h1 style="font-size:clamp(3.4rem,11vw,6rem)">Docker daftari</h1>
+    <p class="lead">Konteyner nima, u qanday tuzilgan va qanday ishlaydi. Qo'lda yozilgan konspekt, rasmlar bilan.</p>
+  </div>
+  <h2>Mundarija</h2>
+  <div class="toc-grid">
+    <div>
+      <p class="toc-part">I. Asoslar</p>
+      <ol start="1" class="toc-list">
+        <li><a href="#nima">Docker — bu nima?</a></li>
+        <li><a href="#qanday">Docker qanday ishlaydi?</a></li>
+        <li><a href="#arxitektura">Docker arxitekturasi</a></li>
+      </ol>
+      <p class="toc-part">II. Konteyner ichidan</p>
+      <ol start="4" class="toc-list">
+        <li><a href="#anatomiya">Konteyner anatomiyasi</a></li>
+        <li><a href="#oci">Image ichki tuzilishi (OCI)</a></li>
+        <li><a href="#overlay">Diskdagi tuzilma: overlay2</a></li>
+        <li><a href="#namespaces">Namespaces batafsil</a></li>
+        <li><a href="#cgroups">cgroups batafsil</a></li>
+        <li><a href="#tarmoq-ichi">Konteyner tarmog'i ichidan</a></li>
+      </ol>
+    </div>
+    <div>
+      <ol start="10" class="toc-list">
+        <li><a href="#pid1">PID 1 va signallar</a></li>
+        <li><a href="#holatlar">Holatlar, exit kodlar, restart</a></li>
+        <li><a href="#xavfsizlik">Xavfsizlik qatlamlari</a></li>
+        <li><a href="#lab">Amaliyot: konteynerni ochib ko'ramiz</a></li>
+      </ol>
+      <p class="toc-part">III. Imkoniyatlar</p>
+      <ol start="14" class="toc-list">
+        <li><a href="#imkoniyatlar">Docker'ning barcha imkoniyatlari</a></li>
+        <li><a href="#imkoniyatlar-2">Imkoniyatlar (davomi) + shpargalka</a></li>
+      </ol>
+      <p class="toc-part">IV. Mustahkamlash</p>
+      <ol start="16" class="toc-list">
+        <li><a href="#amaliyotlar">Yaxshi amaliyotlar va xatolar</a></li>
+        <li><a href="#test">O'zingni tekshir</a></li>
+        <li><a href="#lugat">Lug'at</a></li>
+      </ol>
+    </div>
+  </div>
+  <div class="sticky l" style="margin-top:18px">Asosiy formula:<br><b>Konteyner = Image + R/W qatlam + sozlamalar + namespaces + cgroups + jarayon</b></div>
+</section>
+
+<!-- ============================ 1-VARAQ ============================ -->
+<section class="sheet" id="nima">
+  <div class="sheet-head"><span class="sheet-no"></span><span>I bo'lim: Asoslar</span></div>
+  <h1>Docker — bu nima?</h1>
+  <p class="pencil">Konspekt Lectrum «Docker» intensivi (4 ta dars) asosida + qo'shimcha izohlar bilan.</p>
+
+  <div class="row" style="align-items:center">
+    <div>
+      <div class="def"><span class="lbl">Ta'rif:</span> <b>Docker</b> — ilovani va unga kerak bo'lgan <span class="hl">hamma narsani</span> (kutubxonalar, sozlamalar, runtime) bitta yengil <b>konteynerga</b> joylab, uni istalgan kompyuterda <u>bir xil</u> ishga tushirish platformasi.</div>
+      <p>Oddiy qilib aytganda: dastur o'zining «chamadoni» bilan keladi. Chamadonni qayerda ochsang ham, ichidagi narsalar bir xil.</p>
+    </div>
+    <div class="fig small" style="flex:0 1 300px">
+      <svg viewBox="0 0 340 220" role="img" aria-label="Orqasida konteynerlar ko'targan kit rasmi">
+        <g class="rough">
+          <path class="ln f-b" d="M20,120 L300,120 Q292,178 190,184 Q70,188 20,120 Z"/>
+          <path class="ln f-b" d="M300,120 Q322,112 330,84 Q312,94 302,98 Q312,80 306,64 Q296,90 292,112"/>
+          <circle cx="78" cy="142" r="5" class="ah"/>
+          <path class="ln" d="M112,160 Q140,170 170,160"/>
+          <rect class="ln f-paper" x="60" y="92" width="34" height="26"/><rect class="ln f-paper" x="98" y="92" width="34" height="26"/><rect class="ln f-paper" x="136" y="92" width="34" height="26"/><rect class="ln f-paper" x="174" y="92" width="34" height="26"/><rect class="ln f-paper" x="212" y="92" width="34" height="26"/>
+          <rect class="ln f-y" x="98" y="64" width="34" height="26"/><rect class="ln f-paper" x="136" y="64" width="34" height="26"/><rect class="ln f-p" x="174" y="64" width="34" height="26"/>
+          <rect class="ln f-paper" x="174" y="36" width="34" height="26"/>
+          <path class="ln-pen" d="M10,205 Q40,195 70,205 T130,205 T190,205 T250,205 T310,205" style="stroke-dasharray:none"/>
+        </g>
+        <text x="236" y="42" class="t-red t-sm">"docker" =</text>
+        <text x="236" y="62" class="t-red t-sm">port yukchisi</text>
+      </svg>
+    </div>
+  </div>
+
+  <h3>Nega kerak bo'ldi?</h3>
+  <p>Mashhur muammo: <span class="hl-p">«Mening kompyuterimda ishlayapti-ku!»</span> Dasturchida Node 18, serverda Node 12; kutubxona versiyalari boshqa; OT boshqa. Natijada bir joyda ishlaydi, boshqa joyda buziladi.</p>
+  <p>Docker bu muammoni hal qiladi: muhit ham kod bilan birga «qadoqlanadi». Xuddi dengizdagi <b>standart konteynerlar</b> kabi: ichida nima borligidan qat'i nazar, kran, kema va poyezd uni bir xil usulda ko'taradi.</p>
+
+  <h3>Docker ≠ Virtual mashina</h3>
+  <p>Kursdagi asosiy g'oya: <b>VM</b> — <span class="hl">apparat (hardware) darajasidagi</span> virtualizatsiya, <b>Docker</b> — <span class="hl">operatsion tizim darajasidagi</span> virtualizatsiya. VM har biri uchun to'liq «mehmon OT» yuklaydi, konteynerlar esa bitta host yadrosini (kernel) bo'lishib ishlatadi.</p>
+
+  <div class="fig">
+    <svg viewBox="0 0 760 370" role="img" aria-label="Virtual mashina va Docker konteyner qatlamlari taqqoslanishi">
+      <text x="190" y="30" text-anchor="middle" class="t-big t-red">Virtual mashina (VM)</text>
+      <text x="570" y="30" text-anchor="middle" class="t-big t-green">Docker konteyner</text>
+      <g class="rough">
+        <!-- VM -->
+        <rect class="ln" x="20" y="316" width="340" height="40"/>
+        <rect class="ln" x="20" y="271" width="340" height="40"/>
+        <rect class="ln f-r" x="20" y="226" width="340" height="40"/>
+        <rect class="ln f-p" x="20" y="176" width="106" height="45"/><rect class="ln f-p" x="137" y="176" width="106" height="45"/><rect class="ln f-p" x="254" y="176" width="106" height="45"/>
+        <rect class="ln" x="20" y="131" width="106" height="40"/><rect class="ln" x="137" y="131" width="106" height="40"/><rect class="ln" x="254" y="131" width="106" height="40"/>
+        <rect class="ln f-y" x="20" y="86" width="106" height="40"/><rect class="ln f-y" x="137" y="86" width="106" height="40"/><rect class="ln f-y" x="254" y="86" width="106" height="40"/>
+        <!-- Docker -->
+        <rect class="ln" x="400" y="316" width="340" height="40"/>
+        <rect class="ln" x="400" y="271" width="340" height="40"/>
+        <rect class="ln f-g" x="400" y="226" width="340" height="40"/>
+        <rect class="ln" x="400" y="181" width="106" height="40"/><rect class="ln" x="517" y="181" width="106" height="40"/><rect class="ln" x="634" y="181" width="106" height="40"/>
+        <rect class="ln f-y" x="400" y="136" width="106" height="40"/><rect class="ln f-y" x="517" y="136" width="106" height="40"/><rect class="ln f-y" x="634" y="136" width="106" height="40"/>
+        <path class="ln-red" d="M380,70 L380,360" style="stroke-dasharray:4 7"/>
+      </g>
+      <g text-anchor="middle">
+        <text x="190" y="342">Server (temir)</text><text x="190" y="297">Host OT</text><text x="190" y="252" class="t-red">Hypervisor</text>
+        <text x="73" y="204">Mehmon OT</text><text x="190" y="204">Mehmon OT</text><text x="307" y="204">Mehmon OT</text>
+        <text x="73" y="157" class="t-sm">Bins / Libs</text><text x="190" y="157" class="t-sm">Bins / Libs</text><text x="307" y="157" class="t-sm">Bins / Libs</text>
+        <text x="73" y="112">Ilova A</text><text x="190" y="112">Ilova B</text><text x="307" y="112">Ilova C</text>
+        <text x="570" y="342">Server (temir)</text><text x="570" y="297">Host OT (Linux yadrosi)</text><text x="570" y="252" class="t-green">Docker Engine</text>
+        <text x="453" y="207" class="t-sm">Bins / Libs</text><text x="570" y="207" class="t-sm">Bins / Libs</text><text x="687" y="207" class="t-sm">Bins / Libs</text>
+        <text x="453" y="162">Ilova A</text><text x="570" y="162">Ilova B</text><text x="687" y="162">Ilova C</text>
+        <text x="570" y="100" class="t-green">bo'sh joy = tejalgan resurs</text>
+        <text x="570" y="78" class="t-pen t-sm">mehmon OT yo'q!</text>
+      </g>
+    </svg>
+  </div>
+  <p class="cap">VM'da har ilova o'z OT'ini ko'tarib yuradi (GB'lab), konteynerda esa yo'q (MB'lab).</p>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th></th><th>Virtual mashina</th><th>Docker konteyner</th></tr></thead>
+      <tbody>
+        <tr><td>Hajmi</td><td>Gigabaytlar</td><td>Megabaytlar (alpine ≈ 5 MB)</td></tr>
+        <tr><td>Ishga tushishi</td><td>Daqiqalar</td><td>Soniyalar, hatto millisekundlar</td></tr>
+        <tr><td>OT</td><td>Har birida to'liq mehmon OT</td><td>Host yadrosini bo'lishadi</td></tr>
+        <tr><td>Izolyatsiya</td><td>Juda kuchli (alohida yadro)</td><td>Kuchli, lekin yadro umumiy</td></tr>
+        <tr><td>Bitta serverda</td><td>O'nlab</td><td>Yuzlab, minglab</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="row">
+    <div>
+      <h3>Qisqa tarix</h3>
+      <ul>
+        <li><b>2013</b> — Solomon Hykes (dotCloud) Docker'ni ochiq kod qilib chiqardi.</li>
+        <li>Avval <b>LXC</b> (LinuX Containers) ustida ishlagan, keyin o'zining <b>libcontainer → runC</b> dvigateliga o'tdi.</li>
+        <li><b>2015</b> — OCI (Open Container Initiative) standarti tuzildi.</li>
+        <li>Bugun: Docker Desktop (Windows / macOS / Linux), Docker Hub — dunyodagi eng katta image ombori.</li>
+      </ul>
+    </div>
+    <div class="sticky" style="margin-top:24px">Eslab qol:<br>konteyner — bu kichik VM <u>emas</u>, bu izolyatsiya qilingan oddiy <b>jarayon</b> (process)!</div>
+  </div>
+</section>
+
+<!-- ============================ 2-VARAQ ============================ -->
+<section class="sheet" id="qanday">
+  <div class="sheet-head"><span class="sheet-no"></span><span>I bo'lim: Asoslar</span></div>
+  <h2>Docker qanday ishlaydi?</h2>
+  <p class="lead">Butun jarayon uch so'zdan iborat: <span class="circle">Dockerfile</span> → <span class="circle">Image</span> → <span class="circle">Container</span>.</p>
+
+  <div class="fig">
+    <svg viewBox="0 0 760 300" role="img" aria-label="Dockerfile build orqali image'ga, image run orqali konteynerga aylanadi; image registry'ga push va pull qilinadi">
+      <g class="rough">
+        <path class="ln f-paper" d="M20,40 L150,40 L175,65 L175,145 L20,145 Z"/><path class="ln" d="M150,40 L150,65 L175,65"/>
+        <path class="ln-pen" d="M35,78 L150,78 M35,96 L140,96 M35,114 L155,114 M35,132 L120,132" style="stroke-dasharray:none"/>
+        <rect class="ln f-y" x="295" y="40" width="170" height="105" rx="6"/>
+        <rect class="ln f-paper" x="612" y="30" width="130" height="95" rx="6"/>
+        <rect class="ln f-paper" x="602" y="40" width="130" height="95" rx="6"/>
+        <rect class="ln f-g" x="592" y="50" width="130" height="95" rx="6"/>
+        <path class="ln" d="M185,92 L285,92" marker-end="url(#ar)"/>
+        <path class="ln" d="M475,92 L582,92" marker-end="url(#ar)"/>
+        <path class="ln f-b" d="M300,258 Q282,230 312,220 Q318,192 352,200 Q372,178 402,196 Q436,186 446,214 Q480,220 462,252 Q450,272 420,266 L330,266 Q306,270 300,258 Z"/>
+        <path class="ln-green" d="M350,155 L350,205" marker-end="url(#ar-green)"/>
+        <path class="ln-red" d="M410,205 L410,155" marker-end="url(#ar-red)"/>
+      </g>
+      <text x="98" y="30" text-anchor="middle" class="t-big">Dockerfile</text>
+      <text x="98" y="172" text-anchor="middle" class="t-pen t-sm">retsept (matn)</text>
+      <text x="235" y="82" text-anchor="middle" class="t-red">docker build</text>
+      <text x="380" y="85" text-anchor="middle" class="t-big">Image</text>
+      <text x="380" y="112" text-anchor="middle" class="t-sm">shablon, faqat o'qish</text>
+      <text x="528" y="82" text-anchor="middle" class="t-red">docker run</text>
+      <text x="657" y="98" text-anchor="middle" class="t-big">Container</text>
+      <text x="657" y="124" text-anchor="middle" class="t-sm">ishlayotgan nusxa</text>
+      <text x="660" y="170" text-anchor="middle" class="t-pen t-sm">1 image → N ta konteyner</text>
+      <text x="382" y="246" text-anchor="middle">Registry (Docker Hub)</text>
+      <text x="340" y="185" text-anchor="end" class="t-green t-sm">push</text>
+      <text x="420" y="185" class="t-red t-sm">pull</text>
+    </svg>
+  </div>
+  <p class="cap">Oshxona misoli: Dockerfile — retsept, Image — muzlatilgan tayyor ovqat, Container — isitib dasturxonga qo'yilgani.</p>
+
+  <div class="box-grid">
+    <div class="card"><h4>Dockerfile</h4><p>Image qanday yig'ilishini qadamma-qadam yozadigan oddiy matn fayli: qaysi bazadan boshlash, nima o'rnatish, qaysi fayllarni nusxalash.</p></div>
+    <div class="card"><h4>Image (obraz)</h4><p>Konteyner uchun <b>read-only shablon</b>. Qatlamlardan iborat. Teg (tag) bilan versiyalanadi: <span class="term">nginx:1.16.0</span>, <span class="term">alpine:3.9</span>.</p></div>
+    <div class="card"><h4>Container</h4><p>Image'ning ishga tushirilgan nusxasi. Uni yaratish, to'xtatish, qayta ishga tushirish va o'chirish mumkin.</p></div>
+    <div class="card"><h4>Registry</h4><p>Image'lar ombori. Ommaviy — <b>Docker Hub</b>; shaxsiy — <span class="term">registry:2</span>, GitHub/GitLab Registry.</p></div>
+  </div>
+
+  <h3>Qatlamli fayl tizimi (UFS)</h3>
+  <p><b>Union File System</b> — bir necha qatlamni (layer) ustma-ust qo'yib, ularni <span class="hl">bitta fayl tizimidek</span> ko'rsatadi. Dockerfile'dagi har bir <span class="term">RUN</span>, <span class="term">COPY</span>, <span class="term">ADD</span> buyrug'i yangi qatlam hosil qiladi. Konteyner ishga tushganda, ustiga bitta <b>yoziladigan</b> yupqa qatlam qo'shiladi.</p>
+
+  <div class="fig">
+    <svg viewBox="0 0 760 310" role="img" aria-label="Image qatlamlari ustma-ust, eng ustida konteyner qatlami">
+      <g class="rough">
+        <rect class="ln-red f-r dash" x="110" y="40" width="420" height="44"/>
+        <rect class="ln f-y" x="110" y="104" width="420" height="42"/>
+        <rect class="ln f-paper" x="110" y="150" width="420" height="42"/>
+        <rect class="ln f-paper" x="110" y="196" width="420" height="42"/>
+        <rect class="ln f-b" x="110" y="242" width="420" height="42"/>
+        <path class="ln" d="M552,104 Q566,104 566,120 L566,180 Q566,194 580,194 Q566,194 566,208 L566,270 Q566,284 552,284"/>
+        <path class="ln-red" d="M552,40 Q566,40 566,52 L566,62 Q566,62 578,62 Q566,62 566,72 L566,84 Q566,84 552,84"/>
+      </g>
+      <g text-anchor="middle">
+        <text x="320" y="68" class="t-red">Konteyner qatlami — yozish mumkin (R/W)</text>
+        <text x="320" y="131" class="t-code">COPY index.html .</text>
+        <text x="320" y="177" class="t-code">RUN apt-get install curl -y</text>
+        <text x="320" y="223" class="t-code">ENV MODE production</text>
+        <text x="320" y="269" class="t-code">FROM nginx:1.16.0   (asos)</text>
+      </g>
+      <text x="590" y="190" class="t-big">Image</text>
+      <text x="590" y="214" class="t-sm">faqat o'qish</text>
+      <text x="590" y="236" class="t-sm">(read-only)</text>
+      <text x="590" y="58" class="t-red t-sm">run paytida</text>
+      <text x="590" y="78" class="t-red t-sm">qo'shiladi</text>
+      <text x="20" y="300" class="t-pen t-sm">Copy-on-Write: fayl o'zgarsa, u yuqori qatlamga ko'chiriladi, pastkilar tegilmaydi.</text>
+    </svg>
+  </div>
+  <ul>
+    <li>Bir xil qatlamlar <b>qayta ishlatiladi</b>: 10 ta konteyner bitta nginx image'ni diskda bitta nusxada bo'lishadi.</li>
+    <li>Build <b>keshlanadi</b>: faqat o'zgargan qatlamdan boshlab qayta yig'iladi. Shuning uchun kam o'zgaradigan buyruqlarni tepaga yoz!</li>
+    <li>Konteyner o'chirilsa, uning R/W qatlami ham yo'qoladi → muhim ma'lumot uchun <b>volume</b> kerak (4-varaq).</li>
+  </ul>
+
+  <h3>Izolyatsiya «sehri»: Linux yadrosining ikki quroli</h3>
+  <div class="fig">
+    <svg viewBox="0 0 760 270" role="img" aria-label="Uchta konteyner bitta Linux yadrosi ustida, namespaces va cgroups bilan ajratilgan">
+      <g class="rough">
+        <rect class="ln f-g" x="50" y="30" width="190" height="120" rx="8"/>
+        <rect class="ln f-g" x="285" y="30" width="190" height="120" rx="8"/>
+        <rect class="ln f-g" x="520" y="30" width="190" height="120" rx="8"/>
+        <rect class="ln f-paper" x="70" y="160" width="150" height="16"/><rect class="ln-red f-r" x="70" y="160" width="60" height="16"/>
+        <rect class="ln f-paper" x="305" y="160" width="150" height="16"/><rect class="ln-red f-r" x="305" y="160" width="110" height="16"/>
+        <rect class="ln f-paper" x="540" y="160" width="150" height="16"/><rect class="ln-red f-r" x="540" y="160" width="35" height="16"/>
+        <rect class="ln f-b" x="30" y="206" width="700" height="48" rx="4"/>
+      </g>
+      <g text-anchor="middle">
+        <text x="145" y="58" class="t-big">nginx</text><text x="145" y="84" class="t-sm">PID 1 — o'zi yolg'iz</text><text x="145" y="106" class="t-sm">o'z tarmog'i: eth0</text><text x="145" y="128" class="t-sm">o'z fayl tizimi /</text>
+        <text x="380" y="58" class="t-big">node api</text><text x="380" y="84" class="t-sm">PID 1 — o'zi yolg'iz</text><text x="380" y="106" class="t-sm">o'z hostname'i</text><text x="380" y="128" class="t-sm">o'z foydalanuvchilari</text>
+        <text x="615" y="58" class="t-big">mongo</text><text x="615" y="84" class="t-sm">PID 1 — o'zi yolg'iz</text><text x="615" y="106" class="t-sm">o'z IP manzili</text><text x="615" y="128" class="t-sm">o'z /data/db</text>
+        <text x="145" y="196" class="t-red t-sm">RAM ≤ 10 MB</text><text x="380" y="196" class="t-red t-sm">CPU ≤ 1.5 yadro</text><text x="615" y="196" class="t-red t-sm">RAM ≤ 512 MB</text>
+        <text x="380" y="237">Bitta umumiy Linux yadrosi:  namespaces  +  cgroups  +  UFS</text>
+      </g>
+    </svg>
+  </div>
+  <div class="row">
+    <div>
+      <p><b class="green">Namespaces</b> — konteyner nimani <span class="hl">ko'rishini</span> cheklaydi. Har biri o'zini serverda yolg'izdek his qiladi:</p>
+      <ul>
+        <li><span class="term">pid</span> — jarayonlar, <span class="term">net</span> — tarmoq</li>
+        <li><span class="term">mnt</span> — fayl tizimi, <span class="term">uts</span> — hostname</li>
+        <li><span class="term">ipc</span> — jarayonlararo aloqa, <span class="term">user</span> — foydalanuvchilar</li>
+      </ul>
+    </div>
+    <div>
+      <p><b class="red">cgroups</b> (control groups) — konteyner qancha resurs <span class="hl">ishlatishini</span> cheklaydi: CPU, RAM, disk I/O, jarayonlar soni.</p>
+      <pre style="margin-top:6px">docker run -d -m 10m \
+  --memory-reservation 5m nginx</pre>
+    </div>
+  </div>
+  <div class="sticky l">Windows / macOS'da Docker Desktop yashirin kichik Linux VM (WSL2) ichida ishlaydi, chunki konteynerga Linux yadrosi kerak.</div>
+</section>
+
+<!-- ============================ 3-VARAQ ============================ -->
+<section class="sheet" id="arxitektura">
+  <div class="sheet-head"><span class="sheet-no"></span><span>I bo'lim: Asoslar</span></div>
+  <h2>Docker arxitekturasi</h2>
+  <p class="lead">Docker <b>mijoz–server</b> (client–server) modelida qurilgan. Sen terminalda yozgan <span class="term">docker</span> buyrug'i o'zi hech narsa qilmaydi — u faqat <b>daemon</b>'ga REST API orqali «buyurtma» yuboradi.</p>
+
+  <div class="fig">
+    <svg viewBox="0 0 780 400" role="img" aria-label="Docker arxitekturasi: mijoz, Docker host va registry">
+      <g class="rough">
+        <rect class="ln f-paper" x="15" y="40" width="185" height="320" rx="8"/>
+        <rect class="ln" x="35" y="100" width="145" height="38" rx="5"/>
+        <rect class="ln" x="35" y="160" width="145" height="38" rx="5"/>
+        <rect class="ln" x="35" y="220" width="145" height="38" rx="5"/>
+        <rect class="ln f-paper" x="240" y="40" width="310" height="320" rx="8"/>
+        <rect class="ln f-y" x="260" y="90" width="270" height="42" rx="5"/>
+        <rect class="ln f-g" x="260" y="152" width="270" height="36" rx="5"/>
+        <rect class="ln f-g" x="260" y="206" width="270" height="36" rx="5"/>
+        <rect class="ln f-b" x="260" y="266" width="125" height="80" rx="5"/>
+        <rect class="ln f-b" x="405" y="266" width="125" height="80" rx="5"/>
+        <path class="ln" d="M275,318 L370,318 M275,330 L370,330 M275,306 L370,306"/>
+        <rect class="ln f-g" x="418" y="300" width="28" height="22"/><rect class="ln f-g" x="454" y="300" width="28" height="22"/><rect class="ln f-g" x="490" y="300" width="28" height="22"/>
+        <rect class="ln f-paper" x="590" y="40" width="175" height="320" rx="8"/>
+        <rect class="ln f-b" x="610" y="100" width="135" height="36" rx="5"/>
+        <rect class="ln" x="610" y="150" width="135" height="34" rx="5"/>
+        <rect class="ln" x="610" y="195" width="135" height="34" rx="5"/>
+        <rect class="ln" x="610" y="240" width="135" height="34" rx="5"/>
+        <rect class="ln dash" x="610" y="285" width="135" height="34" rx="5"/>
+        <path class="ln" d="M180,119 L256,111" marker-end="url(#ar)"/>
+        <path class="ln" d="M180,179 L256,116" marker-end="url(#ar)"/>
+        <path class="ln" d="M180,239 L256,122" marker-end="url(#ar)"/>
+        <path class="ln" d="M395,132 L395,148" marker-end="url(#ar)"/>
+        <path class="ln" d="M395,188 L395,202" marker-end="url(#ar)"/>
+        <path class="ln" d="M470,242 L470,262" marker-end="url(#ar)"/>
+        <path class="ln-red" d="M532,104 Q570,90 604,112" marker-start="url(#ar-red)" marker-end="url(#ar-red)"/>
+      </g>
+      <g text-anchor="middle">
+        <text x="107" y="72" class="t-big">Mijoz</text>
+        <text x="107" y="125" class="t-code">docker build</text>
+        <text x="107" y="185" class="t-code">docker pull</text>
+        <text x="107" y="245" class="t-code">docker run</text>
+        <text x="107" y="300" class="t-pen t-sm">terminal (CLI),</text>
+        <text x="107" y="322" class="t-pen t-sm">Docker Desktop, SDK</text>
+        <text x="218" y="92" class="t-red t-sm">REST API</text>
+        <text x="395" y="72" class="t-big">Docker Host</text>
+        <text x="395" y="117">dockerd — daemon</text>
+        <text x="395" y="176">containerd</text>
+        <text x="395" y="230">runc  (+ shim)</text>
+        <text x="322" y="290" class="t-sm">Image'lar</text>
+        <text x="467" y="290" class="t-sm">Konteynerlar</text>
+        <text x="677" y="72" class="t-big">Registry</text>
+        <text x="677" y="124">Docker Hub</text>
+        <text x="677" y="173" class="t-code">nginx</text>
+        <text x="677" y="218" class="t-code">mongo:4</text>
+        <text x="677" y="263" class="t-code">alpine</text>
+        <text x="677" y="308" class="t-sm">sening image'ing</text>
+        <text x="568" y="84" class="t-red t-sm">pull/push</text>
+      </g>
+    </svg>
+  </div>
+  <p class="cap">Mijoz va host bitta kompyuterda ham, turli joyda ham bo'lishi mumkin (masalan, <span class="term">DOCKER_HOST=ssh://server</span>).</p>
+
+  <h3>Qismlar birma-bir</h3>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Qism</th><th>Vazifasi</th></tr></thead>
+      <tbody>
+        <tr><td>docker (CLI)</td><td>Mijoz. Buyruqlaringni REST API so'roviga aylantirib, daemon'ga yuboradi (Unix socket <span class="term">/var/run/docker.sock</span> yoki TCP orqali).</td></tr>
+        <tr><td>dockerd</td><td><b>Docker Daemon</b> — fonda ishlaydigan server. Image, konteyner, tarmoq va volume'larni boshqaradi, build qiladi, registry bilan gaplashadi.</td></tr>
+        <tr><td>containerd</td><td>Konteynerlarning hayot siklini boshqaruvchi runtime: image'ni tortish, saqlash, konteynerni yaratish/to'xtatish. Kubernetes ham uni ishlatadi.</td></tr>
+        <tr><td>runc</td><td>Eng pastki daraja (OCI runtime). Yadroga murojaat qilib namespaces va cgroups bilan jarayonni ishga tushiradi, keyin chetga chiqadi.</td></tr>
+        <tr><td>containerd-shim</td><td>Har bir konteynerning «enagasi»: daemon qayta ishga tushsa ham konteyner o'lmaydi.</td></tr>
+        <tr><td>Docker Engine</td><td>Yuqoridagilarning hammasi birgalikda: daemon + API + CLI.</td></tr>
+        <tr><td>Registry</td><td>Image'lar ombori: Docker Hub, shaxsiy registry, GHCR, ECR va boshqalar.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3><span class="n">?</span><span style="color:var(--green)"><span class="term" style="font-size:.7em">docker run -d -p 80:80 nginx</span> yozganda nima bo'ladi</span></h3>
+  <ol>
+    <li><b>CLI</b> buyruqni JSON so'rovga aylantirib, <b>dockerd</b>'ga yuboradi.</li>
+    <li>Daemon <span class="term">nginx:latest</span> image'i lokal diskda bormi, tekshiradi.</li>
+    <li>Yo'q bo'lsa — <b>Docker Hub</b>'dan qatlamma-qatlam <span class="hl">pull</span> qiladi.</li>
+    <li><b>containerd</b> image asosida konteyner yaratadi: ustiga R/W qatlam, tarmoq interfeysi, IP manzil.</li>
+    <li><b>runc</b> namespaces va cgroups'ni sozlab, nginx jarayonini <b>PID 1</b> sifatida ishga tushiradi.</li>
+    <li>Host'dagi <b>80-port</b> konteynerning 80-portiga ulanadi (<span class="term">-p host:konteyner</span>).</li>
+    <li><span class="term">-d</span> tufayli konteyner fonda qoladi, terminalga uning ID'si chiqadi.</li>
+  </ol>
+
+  <div class="row">
+    <div class="sticky">Docker ob'ektlari:<br>image · container · network · volume · plugin</div>
+    <div>
+      <h3 style="margin-top:6px">Tekshirib ko'r</h3>
+<pre><span class="k">docker</span> version   <span class="c"># Client va Server (Engine) versiyasi alohida</span>
+<span class="k">docker</span> info      <span class="c"># daemon haqida: konteynerlar, driver'lar</span>
+<span class="k">docker</span> system df <span class="c"># qancha disk band</span></pre>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================ KONTEYNER ANATOMIYASI ============================ -->
+<section class="sheet" id="anatomiya">
+  <div class="sheet-head"><span class="sheet-no"></span><span>II bo'lim: Konteyner ichidan</span></div>
+  <h2>Konteyner anatomiyasi</h2>
+  <p class="lead">Konteyner — bu «quti» emas. Bu Linux'dagi oddiy <b>jarayon</b> (process), uning atrofiga esa bir nechta «devor» va «o'lchagich» o'rnatilgan. Keling, uni bo'laklarga ajratamiz.</p>
+
+  <div class="fig">
+    <svg viewBox="0 0 760 420" role="img" aria-label="Konteyner qismlari: markazda jarayon, atrofida rootfs, namespaces, cgroups, tarmoq, mounts, konfiguratsiya, xavfsizlik, metama'lumot">
+      <g class="rough">
+        <path class="ln-pen" d="M200,61 L380,210 M380,82 L380,210 M560,61 L380,210 M190,211 L380,210 M570,211 L380,210 M200,361 L380,210 M380,340 L380,210 M560,361 L380,210"/>
+        <rect class="ln f-b" x="30" y="30" width="170" height="62" rx="6"/>
+        <rect class="ln f-g" x="295" y="20" width="170" height="62" rx="6"/>
+        <rect class="ln f-r" x="560" y="30" width="170" height="62" rx="6"/>
+        <rect class="ln f-paper" x="20" y="180" width="170" height="62" rx="6"/>
+        <rect class="ln f-paper" x="570" y="180" width="170" height="62" rx="6"/>
+        <rect class="ln f-paper" x="30" y="330" width="170" height="62" rx="6"/>
+        <rect class="ln f-r" x="295" y="340" width="170" height="62" rx="6"/>
+        <rect class="ln f-paper" x="560" y="330" width="170" height="62" rx="6"/>
+        <circle class="f-paper" cx="380" cy="210" r="72"/>
+        <circle class="ln f-y" cx="380" cy="210" r="72"/>
+      </g>
+      <g text-anchor="middle">
+        <text x="380" y="198" class="t-big">Jarayon</text>
+        <text x="380" y="224" class="t-red">PID 1</text>
+        <text x="380" y="246" class="t-code">nginx</text>
+        <text x="115" y="56">Rootfs</text><text x="115" y="80" class="t-sm">image + R/W qatlam</text>
+        <text x="380" y="46" class="t-green">Namespaces</text><text x="380" y="70" class="t-sm">nimani ko'radi</text>
+        <text x="645" y="56" class="t-red">cgroups</text><text x="645" y="80" class="t-sm">qancha resurs oladi</text>
+        <text x="105" y="206">Tarmoq</text><text x="105" y="230" class="t-sm">eth0, IP, hosts</text>
+        <text x="655" y="206">Mounts</text><text x="655" y="230" class="t-sm">volume, bind, tmpfs</text>
+        <text x="115" y="356">Konfiguratsiya</text><text x="115" y="380" class="t-sm">Env, Cmd, User, Workdir</text>
+        <text x="380" y="366" class="t-red">Xavfsizlik</text><text x="380" y="390" class="t-sm">caps, seccomp, LSM</text>
+        <text x="645" y="356">Metama'lumot</text><text x="645" y="380" class="t-sm">ID, nom, holat, log</text>
+      </g>
+    </svg>
+  </div>
+  <p class="cap">Markazda doim bitta jarayon turadi. Qolgan hammasi uning atrofidagi «muhit».</p>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Qism</th><th>Nima u</th><th>Qayerda ko'rinadi</th></tr></thead>
+      <tbody>
+        <tr><td>Rootfs</td><td>Konteyner «/» deb ko'radigan fayl tizimi: image qatlamlari + ustidagi yoziladigan qatlam</td><td><span class="term">docker diff</span>, <span class="term">.GraphDriver</span></td></tr>
+        <tr><td>Jarayon</td><td>Cmd/Entrypoint'dan ishga tushgan dastur, konteyner ichida PID 1</td><td><span class="term">docker top</span></td></tr>
+        <tr><td>Namespaces</td><td>Izolyatsiya: o'z PID'lari, tarmog'i, hostname'i, mount'lari</td><td><span class="term">/proc/&lt;pid&gt;/ns</span></td></tr>
+        <tr><td>cgroups</td><td>Limitlar: RAM, CPU, jarayonlar soni, disk I/O</td><td><span class="term">/sys/fs/cgroup</span>, <span class="term">docker stats</span></td></tr>
+        <tr><td>Tarmoq</td><td>veth interfeysi, IP, <span class="term">/etc/hosts</span>, <span class="term">/etc/resolv.conf</span>, hostname</td><td><span class="term">.NetworkSettings</span></td></tr>
+        <tr><td>Mounts</td><td>Tashqaridan ulangan papkalar va <span class="term">/proc</span>, <span class="term">/sys</span>, <span class="term">/dev</span></td><td><span class="term">.Mounts</span></td></tr>
+        <tr><td>Konfiguratsiya</td><td>Env, Cmd, Entrypoint, WorkingDir, User, Labels, portlar</td><td><span class="term">.Config</span>, <span class="term">.HostConfig</span></td></tr>
+        <tr><td>Xavfsizlik</td><td>Capabilities, seccomp profili, AppArmor/SELinux</td><td><span class="term">.HostConfig.CapAdd</span></td></tr>
+        <tr><td>Metama'lumot</td><td>64 belgili ID, nom, yaratilgan vaqt, holat, log fayli</td><td><span class="term">docker inspect</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Konteyner ID va nomi</h3>
+  <ul>
+    <li><b>ID</b> — 64 ta o'n oltilik belgi (sha256 uzunligida): <span class="term">3f9a1c7d2e…</span>. Odatda birinchi 12 tasi ko'rsatiladi, buyruqlarda esa 3–4 ta belgi ham yetadi, agar takrorlanmasa.</li>
+    <li><b>Nom</b> — <span class="term">--name</span> bilan beriladi. Berilmasa, Docker kulgili nom to'qiydi: <span class="term">sleepy_turing</span>, <span class="term">brave_hopper</span>. Nom yagona bo'lishi shart.</li>
+    <li><b>Hostname</b> — konteyner ichida standart holatda qisqa ID'ga teng.</li>
+  </ul>
+
+  <div class="row">
+    <div>
+      <h3 style="margin-top:6px">Image va konteyner farqi</h3>
+      <ul>
+        <li>Image — <b>sinf</b> (class), konteyner — <b>ob'ekt</b> (instance).</li>
+        <li>Image o'zgarmaydi; konteyner o'zgaradi (fayl yozadi, jarayonlari bor).</li>
+        <li>Bitta image'dan istalgancha konteyner yaratish mumkin.</li>
+        <li>Image o'chirilishi uchun undan yasalgan konteynerlar avval o'chirilishi kerak.</li>
+      </ul>
+    </div>
+    <div class="sticky">Konteyner <u>vaqtinchalik</u> (ephemeral) bo'lishi kerak: uni istalgan payt o'chirib, yangisini ko'tarsang, hech narsa yo'qolmasin!</div>
+  </div>
+</section>
+
+<!-- ============================ OCI IMAGE ============================ -->
+<section class="sheet" id="oci">
+  <div class="sheet-head"><span class="sheet-no"></span><span>II bo'lim: Konteyner ichidan</span></div>
+  <h2>Image ichki tuzilishi (OCI)</h2>
+  <p class="lead">Image — bu bitta fayl emas. U <b>JSON hujjatlar</b> va <b>tar arxivlar</b> to'plami bo'lib, hammasi o'z sha256 xeshi bo'yicha saqlanadi. Bu format <b>OCI Image Spec</b> standartida yozilgan.</p>
+
+  <div class="fig">
+    <svg viewBox="0 0 760 380" role="img" aria-label="OCI image tuzilishi: index, manifestlar, config va qatlamlar">
+      <g class="rough">
+        <rect class="ln f-y" x="290" y="20" width="180" height="58" rx="6"/>
+        <rect class="ln f-paper" x="110" y="130" width="190" height="58" rx="6"/>
+        <rect class="ln f-paper dash" x="460" y="130" width="190" height="58" rx="6"/>
+        <rect class="ln f-g" x="20" y="250" width="150" height="72" rx="6"/>
+        <rect class="ln f-b" x="195" y="250" width="120" height="72" rx="6"/>
+        <rect class="ln f-b" x="335" y="250" width="120" height="72" rx="6"/>
+        <rect class="ln f-b" x="475" y="250" width="120" height="72" rx="6"/>
+        <path class="ln" d="M350,78 L220,126" marker-end="url(#ar)"/>
+        <path class="ln" d="M410,78 L540,126" marker-end="url(#ar)"/>
+        <path class="ln" d="M180,188 L100,246" marker-end="url(#ar)"/>
+        <path class="ln" d="M200,188 L250,246" marker-end="url(#ar)"/>
+        <path class="ln" d="M220,188 L390,246" marker-end="url(#ar)"/>
+        <path class="ln" d="M240,188 L525,246" marker-end="url(#ar)"/>
+        <path class="ln-pen" d="M600,188 L650,240"/>
+      </g>
+      <g text-anchor="middle">
+        <text x="380" y="46">Image Index</text>
+        <text x="380" y="68" class="t-code">nginx:alpine</text>
+        <text x="205" y="156">Manifest</text><text x="205" y="178" class="t-code">linux/amd64</text>
+        <text x="555" y="156" class="t-pen">Manifest</text><text x="555" y="178" class="t-code">linux/arm64</text>
+        <text x="95" y="278">Config JSON</text><text x="95" y="302" class="t-sm">Env, Cmd, diff_ids</text>
+        <text x="255" y="278">Qatlam 1</text><text x="255" y="302" class="t-code">sha256:9a1c…</text>
+        <text x="395" y="278">Qatlam 2</text><text x="395" y="302" class="t-code">sha256:4b7e…</text>
+        <text x="535" y="278">Qatlam 3</text><text x="535" y="302" class="t-code">sha256:c02f…</text>
+        <text x="680" y="262" class="t-pen t-sm">o'z qatlamlari</text>
+        <text x="380" y="362" class="t-red t-sm">Hammasi sha256 xesh bo'yicha saqlanadi (content-addressable)</text>
+      </g>
+    </svg>
+  </div>
+  <p class="cap">Docker pull qilganda avval index, keyin sening protsessoringga mos manifest, keyin config va qatlamlar yuklanadi.</p>
+
+  <div class="box-grid">
+    <div class="card"><h4>Image Index</h4><p>«Ko'p platformali» ro'yxat: har bir arxitektura (amd64, arm64, …) uchun alohida manifestga havola. Shuning uchun <span class="term">nginx</span> ham noutbukda, ham Raspberry Pi'da ishlaydi.</p></div>
+    <div class="card"><h4>Manifest</h4><p>Bitta platforma uchun: config faylining xeshi va qatlamlar xeshlari ro'yxati (tartibi muhim!).</p></div>
+    <div class="card"><h4>Config</h4><p>Image'ning «pasporti»: Env, Cmd, Entrypoint, WorkingDir, ExposedPorts, User, Labels, qatlamlar tarixi (<span class="term">history</span>).</p></div>
+    <div class="card"><h4>Qatlamlar (layers)</h4><p>Har biri — fayl tizimi o'zgarishlarining <span class="term">tar.gz</span> arxivi. O'chirilgan fayllar maxsus «whiteout» fayl bilan belgilanadi.</p></div>
+  </div>
+
+  <h3>Config JSON qanday ko'rinadi (qisqartirilgan)</h3>
+<pre>{
+  <span class="s">"architecture"</span>: "amd64",  <span class="s">"os"</span>: "linux",
+  <span class="s">"config"</span>: {
+    "Env": ["PATH=/usr/local/sbin:/usr/bin", "NGINX_VERSION=1.27.0"],
+    "Entrypoint": ["/docker-entrypoint.sh"],
+    "Cmd": ["nginx", "-g", "daemon off;"],
+    "ExposedPorts": { "80/tcp": {} },
+    "StopSignal": "SIGQUIT"
+  },
+  <span class="s">"rootfs"</span>: {
+    "type": "layers",
+    "diff_ids": ["sha256:9a1c…", "sha256:4b7e…", "sha256:c02f…"]
+  },
+  <span class="s">"history"</span>: [ { "created_by": "ADD alpine-minirootfs.tar.gz / " }, … ]
+}</pre>
+
+  <h3>Digest va teg farqi</h3>
+  <ul>
+    <li><b>Teg</b> (<span class="term">nginx:1.27</span>) — o'zgaruvchan yorliq. Bugun bir image'ni, ertaga boshqasini ko'rsatishi mumkin.</li>
+    <li><b>Digest</b> (<span class="term">nginx@sha256:5f3b…</span>) — o'zgarmas. Mazmun bir bayt o'zgarsa, digest ham o'zgaradi.</li>
+    <li>Ishlab chiqarishda (production) aniq versiya yoki digest bilan ishlash xavfsizroq.</li>
+  </ul>
+<pre><span class="k">docker</span> image inspect nginx:alpine --format "{{json .RootFS.Layers}}"
+<span class="k">docker</span> buildx imagetools inspect nginx:alpine   <span class="c"># index va platformalar</span>
+<span class="k">docker</span> image ls --digests
+<span class="k">docker</span> save nginx:alpine -o n.tar &amp;&amp; tar -tf n.tar  <span class="c"># ichidagi blob'larni ko'rish</span></pre>
+  <div class="sticky l">OCI'da 3 ta standart bor: <b>Image Spec</b> (image formati), <b>Runtime Spec</b> (konteyner qanday ishga tushadi, runc shuni bajaradi) va <b>Distribution Spec</b> (registry API).</div>
+</section>
+
+<!-- ============================ OVERLAY2 ============================ -->
+<section class="sheet" id="overlay">
+  <div class="sheet-head"><span class="sheet-no"></span><span>II bo'lim: Konteyner ichidan</span></div>
+  <h2>Diskdagi tuzilma: overlay2</h2>
+  <p class="lead">Qatlamlarni bitta fayl tizimiga «yopishtiradigan» mexanizm — <b>storage driver</b>. Linux'da standart driver — <span class="hl">overlay2</span> (yadrodagi OverlayFS asosida).</p>
+
+  <div class="fig">
+    <svg viewBox="0 0 760 400" role="img" aria-label="OverlayFS: lowerdir qatlamlari, upperdir va merged ko'rinish">
+      <g class="rough">
+        <path class="ln-pen" d="M250,86 L250,340 M380,86 L380,340 M510,86 L510,340 M640,86 L640,340"/>
+        <rect class="ln f-g" x="200" y="30" width="540" height="56" rx="6"/>
+        <rect class="ln-red f-r dash" x="200" y="135" width="540" height="56" rx="6"/>
+        <rect class="ln f-b" x="200" y="225" width="540" height="50" rx="6"/>
+        <rect class="ln f-b" x="200" y="290" width="540" height="50" rx="6"/>
+        <rect class="ln f-y" x="335" y="41" width="90" height="34"/>
+        <rect class="ln f-paper" x="465" y="41" width="90" height="34"/>
+        <rect class="ln f-paper" x="595" y="41" width="90" height="34"/>
+        <rect class="ln-red f-paper" x="205" y="146" width="90" height="34"/>
+        <path class="ln-red" d="M212,150 L288,176 M288,150 L212,176"/>
+        <rect class="ln f-y" x="335" y="146" width="90" height="34"/>
+        <rect class="ln f-paper" x="465" y="146" width="90" height="34"/>
+        <rect class="ln f-paper" x="595" y="233" width="90" height="34"/>
+        <rect class="ln f-paper" x="205" y="298" width="90" height="34"/>
+        <rect class="ln f-paper" x="335" y="298" width="90" height="34"/>
+      </g>
+      <g text-anchor="middle">
+        <text x="380" y="64" class="t-code">b.txt*</text>
+        <text x="510" y="64" class="t-code">c.txt</text>
+        <text x="640" y="64" class="t-code">d.txt</text>
+        <text x="250" y="64" class="t-pen">—</text>
+        <text x="250" y="206" class="t-red t-sm">whiteout: a.txt</text>
+        <text x="380" y="169" class="t-code">b.txt*</text>
+        <text x="510" y="169" class="t-code">c.txt</text>
+        <text x="640" y="256" class="t-code">d.txt</text>
+        <text x="250" y="321" class="t-code">a.txt</text>
+        <text x="380" y="321" class="t-code">b.txt</text>
+      </g>
+      <g>
+        <text x="20" y="54" class="t-green">merged</text><text x="20" y="76" class="t-sm">konteyner ko'radi</text>
+        <text x="20" y="159" class="t-red">upperdir</text><text x="20" y="181" class="t-sm">R/W qatlam</text>
+        <text x="20" y="256">lowerdir 2</text>
+        <text x="20" y="314">lowerdir 1</text><text x="20" y="336" class="t-sm">(image asosi)</text>
+        <text x="20" y="385" class="t-pen t-sm">Pastdan yuqoriga: yuqoridagi fayl pastdagi xuddi shu nomli faylni «yopadi».</text>
+      </g>
+    </svg>
+  </div>
+  <ul>
+    <li><b>lowerdir</b> — image qatlamlari, faqat o'qiladi.</li>
+    <li><b>upperdir</b> — konteynerning yoziladigan qatlami. Yangi va o'zgargan fayllar shu yerga tushadi.</li>
+    <li><b>workdir</b> — OverlayFS'ning ichki ishchi papkasi (o'zgarishlarni xavfsiz yozish uchun).</li>
+    <li><b>merged</b> — hammasi birlashgan ko'rinish. Konteyner uchun <span class="term">/</span> shu.</li>
+  </ul>
+
+  <h3>Uch holat</h3>
+  <div class="box-grid">
+    <div class="card"><h4>O'qish</h4><p>Fayl yuqoridan pastga qidiriladi va birinchi topilgani ko'rsatiladi. Nusxa olinmaydi, shuning uchun tez.</p></div>
+    <div class="card"><h4>O'zgartirish</h4><p><b>Copy-on-Write</b>: fayl avval butunlay upperdir'ga ko'chiriladi, keyin o'zgartiriladi. Katta faylda 1 bayt o'zgarsa ham butun fayl ko'chadi!</p></div>
+    <div class="card"><h4>O'chirish</h4><p>Pastdagi fayl haqiqatda o'chmaydi. Upperdir'da <b>whiteout</b> (maxsus 0/0 qurilma fayli) yaratiladi va fayl «yashiriladi».</p></div>
+  </div>
+  <p class="red">Xulosa: <span class="term">RUN rm katta.zip</span> alohida qatlamda bo'lsa, image kichraymaydi! O'chirishni yuklab olish bilan bitta RUN ichida qil.</p>
+
+  <h3>/var/lib/docker ichida nima bor</h3>
+<pre>/var/lib/docker/
+├── overlay2/            <span class="c"># qatlamlar</span>
+│   ├── 3f9a…/diff/      <span class="c"># qatlam mazmuni</span>
+│   ├── 3f9a…/link       <span class="c"># qisqa nom (l/ papkasidagi symlink)</span>
+│   ├── 3f9a…/lower      <span class="c"># pastdagi qatlamlar ro'yxati</span>
+│   ├── 3f9a…/work/      <span class="c"># workdir</span>
+│   ├── 3f9a…/merged/    <span class="c"># faqat konteyner ishlayotganda</span>
+│   └── l/
+├── image/overlay2/      <span class="c"># imagedb (config'lar), layerdb (qatlamlar zanjiri)</span>
+├── containers/&lt;id&gt;/
+│   ├── config.v2.json   <span class="c"># Config, holat, nom</span>
+│   ├── hostconfig.json  <span class="c"># portlar, limitlar, mounts, restart</span>
+│   ├── hostname  hosts  resolv.conf
+│   └── &lt;id&gt;-json.log    <span class="c"># docker logs shu fayldan o'qiydi</span>
+├── volumes/&lt;nom&gt;/_data <span class="c"># nomli volume'lar</span>
+├── network/             <span class="c"># tarmoqlar bazasi</span>
+└── buildkit/            <span class="c"># build keshi</span></pre>
+<pre><span class="k">docker</span> info --format "{{.Driver}}"          <span class="c"># overlay2</span>
+<span class="k">docker</span> inspect lab --format "{{json .GraphDriver.Data}}"
+<span class="c"># → LowerDir, UpperDir, WorkDir, MergedDir yo'llari</span></pre>
+  <div class="sticky">Diqqat: yangi Docker versiyalarida <b>containerd image store</b> yoqilgan bo'lishi mumkin. Unda qatlamlar <span class="term">/var/lib/containerd</span> ichida saqlanadi. Docker Desktop'da esa bu papkalar yashirin Linux VM ichida bo'ladi.</div>
+  <p class="pencil" style="margin-top:14px">Qo'lda o'zgartirma! <span class="term">/var/lib/docker</span> ichini faqat o'rganish uchun ko'r, tahrirlash Docker'ni buzadi.</p>
+</section>
+
+<!-- ============================ NAMESPACES ============================ -->
+<section class="sheet" id="namespaces">
+  <div class="sheet-head"><span class="sheet-no"></span><span>II bo'lim: Konteyner ichidan</span></div>
+  <h2>Namespaces batafsil</h2>
+  <p class="lead"><b>Namespace</b> — Linux yadrosining xususiyati: u jarayonga tizim resurslarining <span class="hl">alohida nusxasini</span> ko'rsatadi. Jarayon o'zini tizimda yolg'izdek his qiladi.</p>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Namespace</th><th>Nimani ajratadi</th><th>Docker'da</th></tr></thead>
+      <tbody>
+        <tr><td>pid</td><td>Jarayon raqamlari. Konteyner ichida birinchi jarayon — PID 1</td><td>Doim (<span class="term">--pid=host</span> bilan o'chiriladi)</td></tr>
+        <tr><td>net</td><td>Tarmoq interfeyslari, IP, marshrutlar, portlar, iptables</td><td>Doim (<span class="term">--network host</span> bundan mustasno)</td></tr>
+        <tr><td>mnt</td><td>Mount nuqtalari, ya'ni fayl tizimi ko'rinishi</td><td>Doim</td></tr>
+        <tr><td>uts</td><td>Hostname va domen nomi</td><td>Doim (<span class="term">--hostname</span>)</td></tr>
+        <tr><td>ipc</td><td>Umumiy xotira, semaforlar, xabar navbatlari</td><td>Doim (<span class="term">--ipc</span>)</td></tr>
+        <tr><td>user</td><td>UID/GID: ichkaridagi root tashqarida oddiy foydalanuvchi bo'ladi</td><td>Faqat userns-remap yoki rootless rejimda</td></tr>
+        <tr><td>cgroup</td><td>cgroup ierarxiyasining ko'rinishi</td><td>cgroups v2 da standart holatda</td></tr>
+        <tr><td>time</td><td>Tizim soati siljishi (yadro 5.6+)</td><td>Standart holatda ishlatilmaydi</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>PID namespace: bir jarayon, ikki raqam</h3>
+  <div class="fig">
+    <svg viewBox="0 0 760 340" role="img" aria-label="Host nginx'ni PID 4321 deb, konteyner esa PID 1 deb ko'radi">
+      <g class="rough">
+        <rect class="ln f-paper" x="40" y="60" width="170" height="36" rx="5"/>
+        <rect class="ln f-paper" x="80" y="115" width="170" height="36" rx="5"/>
+        <rect class="ln f-paper" x="120" y="170" width="190" height="36" rx="5"/>
+        <rect class="ln f-y" x="160" y="225" width="190" height="36" rx="5"/>
+        <rect class="ln f-y" x="200" y="280" width="190" height="36" rx="5"/>
+        <path class="ln" d="M60,96 L60,133 L80,133 M100,151 L100,188 L120,188 M140,206 L140,243 L160,243 M180,261 L180,298 L200,298"/>
+        <rect class="ln-green dash f-g" x="440" y="150" width="300" height="180" rx="14" style="fill-opacity:.5"/>
+        <rect class="ln f-y" x="470" y="200" width="190" height="36" rx="5"/>
+        <rect class="ln f-y" x="510" y="266" width="190" height="36" rx="5"/>
+        <path class="ln" d="M490,236 L490,284 L510,284"/>
+        <path class="ln-red dash" d="M350,243 Q410,230 466,218" marker-end="url(#ar-red)"/>
+        <path class="ln-red dash" d="M390,298 Q450,292 506,284" marker-end="url(#ar-red)"/>
+      </g>
+      <text x="40" y="36" class="t-big">Host ko'radi</text>
+      <text x="460" y="180" class="t-big t-green">Konteyner ko'radi</text>
+      <g class="t-code">
+        <text x="52" y="83">systemd       1</text>
+        <text x="92" y="138">containerd  812</text>
+        <text x="132" y="193">containerd-shim 4302</text>
+        <text x="172" y="248">nginx: master  4321</text>
+        <text x="212" y="303">nginx: worker  4350</text>
+        <text x="482" y="223">nginx: master     1</text>
+        <text x="522" y="289">nginx: worker     7</text>
+      </g>
+      <text x="460" y="60" class="t-pen t-sm">Konteyner ichida host jarayonlari</text>
+      <text x="460" y="82" class="t-pen t-sm">umuman ko'rinmaydi.</text>
+      <text x="460" y="112" class="t-pen t-sm">Host esa hammasini ko'radi!</text>
+    </svg>
+  </div>
+
+  <h3>O'zing tekshirib ko'r</h3>
+<pre><span class="k">docker</span> run -d --name lab nginx:alpine
+PID=$(<span class="k">docker</span> inspect -f "{{.State.Pid}}" lab)   <span class="c"># host'dagi PID, masalan 4321</span>
+sudo ls -l /proc/$PID/ns                  <span class="c"># net:[4026532608] pid:[4026532606] …</span>
+sudo lsns -p $PID                         <span class="c"># qaysi namespace'larda</span>
+sudo nsenter -t $PID -n ip addr           <span class="c"># konteyner tarmog'iga host'dan "kirish"</span>
+<span class="k">docker</span> exec lab ps                        <span class="c"># ichkarida: PID 1 = nginx</span></pre>
+
+  <h3>Namespace'larni bo'lishish</h3>
+  <ul>
+    <li><span class="term">--network container:lab</span> — boshqa konteyner tarmog'iga qo'shilish (Kubernetes pod'lari aynan shunday: bitta IP, bir necha konteyner).</li>
+    <li><span class="term">--pid container:lab</span> — boshqa konteyner jarayonlarini ko'rish (debug uchun qulay).</li>
+    <li><span class="term">--network host</span>, <span class="term">--pid host</span> — izolyatsiyani o'chirish. Faqat nima qilayotganingni bilsang ishlat.</li>
+  </ul>
+  <div class="sticky l">Docker <b>exec</b> ham shu yo'l bilan ishlaydi: yangi jarayon ishlab turgan konteynerning namespace'lari ichiga «kiritiladi» (setns).</div>
+</section>
+
+<!-- ============================ CGROUPS ============================ -->
+<section class="sheet" id="cgroups">
+  <div class="sheet-head"><span class="sheet-no"></span><span>II bo'lim: Konteyner ichidan</span></div>
+  <h2>cgroups batafsil</h2>
+  <p class="lead">Namespaces «nimani ko'rish»ni cheklasa, <b>cgroups</b> «qancha ishlatish»ni cheklaydi. Limit bo'lmasa, bitta konteyner butun serverning RAM'ini yeb qo'yishi mumkin.</p>
+
+  <div class="fig">
+    <svg viewBox="0 0 760 300" role="img" aria-label="cgroup fayllar daraxti va xotira hamda CPU limit ko'rsatkichlari">
+      <g class="rough">
+        <path class="ln" d="M40,50 L40,88 L60,88 M70,96 L70,128 L90,128 M100,136 L100,258 M100,168 L120,168 M100,198 L120,198 M100,228 L120,228 M100,258 L120,258"/>
+        <rect class="ln f-paper" x="480" y="60" width="240" height="36"/>
+        <rect class="ln f-y" x="480" y="60" width="150" height="36"/>
+        <path class="ln-red" d="M720,48 L720,108"/>
+        <rect class="ln f-paper" x="480" y="200" width="240" height="36"/>
+        <rect class="ln f-b" x="480" y="200" width="120" height="36"/>
+        <path class="ln-red" d="M600,188 L600,248"/>
+      </g>
+      <g class="t-code">
+        <text x="30" y="40">/sys/fs/cgroup/</text>
+        <text x="64" y="93">system.slice/</text>
+        <text x="94" y="133">docker-3f9a….scope/</text>
+        <text x="126" y="173">memory.max     = 67108864</text>
+        <text x="126" y="203">memory.current = 41943040</text>
+        <text x="126" y="233">cpu.max        = 50000 100000</text>
+        <text x="126" y="263">pids.max       = 100</text>
+      </g>
+      <text x="480" y="40">Xotira (RAM)</text>
+      <text x="555" y="84" text-anchor="middle" class="t-sm">40 MiB</text>
+      <text x="720" y="126" text-anchor="end" class="t-red t-sm">limit: 64 MiB</text>
+      <text x="480" y="156" class="t-red t-sm">oshib ketsa → OOM killer → exit 137</text>
+      <text x="480" y="186">CPU</text>
+      <text x="540" y="224" text-anchor="middle" class="t-sm">50%</text>
+      <text x="600" y="270" text-anchor="middle" class="t-red t-sm">--cpus 0.5</text>
+    </svg>
+  </div>
+  <p class="cap"><span class="term">cpu.max = 50000 100000</span> degani: har 100 ms ichida 50 ms protsessor vaqti = yarim yadro.</p>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Bayroq</th><th>cgroup fayli</th><th>Ma'nosi</th></tr></thead>
+      <tbody>
+        <tr><td>-m 64m</td><td>memory.max</td><td>RAM'ning qattiq chegarasi</td></tr>
+        <tr><td>--memory-reservation 32m</td><td>memory.low</td><td>Yumshoq chegara: RAM tanqisligida shu darajagacha siqiladi</td></tr>
+        <tr><td>--memory-swap 128m</td><td>memory.swap.max</td><td>RAM + swap jami (−1 = cheksiz)</td></tr>
+        <tr><td>--cpus 1.5</td><td>cpu.max</td><td>Ko'pi bilan 1,5 yadro</td></tr>
+        <tr><td>--cpu-shares 512</td><td>cpu.weight</td><td>Nisbiy ulush: faqat raqobat bo'lganda ta'sir qiladi</td></tr>
+        <tr><td>--cpuset-cpus 0,1</td><td>cpuset.cpus</td><td>Faqat 0 va 1-yadrolarda ishlash</td></tr>
+        <tr><td>--pids-limit 100</td><td>pids.max</td><td>Jarayonlar soni (fork-bomba himoyasi)</td></tr>
+        <tr><td>--device-write-bps</td><td>io.max</td><td>Diskka yozish tezligi chegarasi</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>OOM (Out Of Memory) bo'lsa nima bo'ladi?</h3>
+  <ol>
+    <li>Jarayon <span class="term">memory.max</span>dan ko'p xotira so'raydi.</li>
+    <li>Yadro avval keshni tozalab ko'radi.</li>
+    <li>Yetmasa, <b>OOM killer</b> konteyner ichidagi jarayonni SIGKILL bilan o'ldiradi.</li>
+    <li>Konteyner <b>exit 137</b> bilan to'xtaydi, <span class="term">.State.OOMKilled = true</span>.</li>
+  </ol>
+<pre><span class="k">docker</span> run -d --name lab -m 64m --cpus 0.5 --pids-limit 100 nginx:alpine
+<span class="k">docker</span> stats --no-stream lab     <span class="c"># MEM USAGE / LIMIT: 3.1MiB / 64MiB</span>
+<span class="k">docker</span> update --memory 128m --memory-swap 256m lab   <span class="c"># to'xtatmasdan o'zgartirish</span>
+<span class="k">docker</span> inspect -f "{{.State.OOMKilled}}" lab</pre>
+  <div class="row">
+    <div class="sticky">Limitsiz konteyner = serverdagi hamma narsa uchun xavf. Productionda doim <b>-m</b> va <b>--cpus</b> qo'y!</div>
+    <div>
+      <p><b>pause</b> buyrug'i ham cgroups orqali ishlaydi: <b>freezer</b> jarayonlarni «muzlatib» qo'yadi, ular xotirada qoladi, lekin CPU ishlatmaydi.</p>
+      <p class="pencil">cgroups v1 da har bir resurs alohida daraxtda edi. v2 da yagona daraxt; zamonaviy distributivlarda standart holatda v2 ishlatiladi.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ TARMOQ ICHIDAN ============================ -->
+<section class="sheet" id="tarmoq-ichi">
+  <div class="sheet-head"><span class="sheet-no"></span><span>II bo'lim: Konteyner ichidan</span></div>
+  <h2>Konteyner tarmog'i ichidan</h2>
+  <p class="lead">Standart <b>bridge</b> tarmog'ida har bir konteyner host'ga virtual «kabel» orqali ulanadi. Bu kabel <b>veth pair</b> deyiladi: bir uchi konteyner ichida, ikkinchisi host'da.</p>
+
+  <div class="fig">
+    <svg viewBox="0 0 760 410" role="img" aria-label="Konteynerlar veth juftligi orqali docker0 ko'prigiga, u esa iptables orqali host eth0 va internetga ulanadi">
+      <g class="rough">
+        <rect class="ln-pen" x="10" y="10" width="740" height="340" rx="14" style="stroke-dasharray:6 5"/>
+        <rect class="ln f-g" x="30" y="40" width="190" height="115" rx="8"/>
+        <rect class="ln f-g" x="30" y="205" width="190" height="115" rx="8"/>
+        <rect class="ln f-paper" x="55" y="100" width="140" height="36" rx="4"/>
+        <rect class="ln f-paper" x="55" y="265" width="140" height="36" rx="4"/>
+        <rect class="ln f-paper" x="250" y="100" width="95" height="36" rx="4"/>
+        <rect class="ln f-paper" x="250" y="265" width="95" height="36" rx="4"/>
+        <rect class="ln f-y" x="380" y="150" width="160" height="72" rx="6"/>
+        <rect class="ln f-g" x="380" y="30" width="160" height="62" rx="6"/>
+        <rect class="ln f-r" x="575" y="150" width="160" height="72" rx="6"/>
+        <rect class="ln f-b" x="575" y="265" width="160" height="58" rx="6"/>
+        <path class="ln" d="M195,118 Q222,108 250,118 M195,283 Q222,293 250,283"/>
+        <path class="ln" d="M345,118 L378,170 M345,283 L378,206"/>
+        <path class="ln" d="M540,186 L571,186" marker-end="url(#ar)"/>
+        <path class="ln" d="M655,222 L655,261" marker-end="url(#ar)"/>
+        <path class="ln" d="M655,323 L655,392" marker-start="url(#ar)" marker-end="url(#ar)"/>
+      </g>
+      <g text-anchor="middle">
+        <text x="125" y="72">Konteyner A</text>
+        <text x="125" y="124" class="t-code">eth0 172.17.0.2</text>
+        <text x="125" y="237">Konteyner B</text>
+        <text x="125" y="289" class="t-code">eth0 172.17.0.3</text>
+        <text x="297" y="124" class="t-code">veth1a2b</text>
+        <text x="297" y="289" class="t-code">veth9c8d</text>
+        <text x="460" y="180">docker0</text>
+        <text x="460" y="206" class="t-code">172.17.0.1/16</text>
+        <text x="460" y="58" class="t-sm">Ichki DNS</text>
+        <text x="460" y="80" class="t-code">127.0.0.11</text>
+        <text x="655" y="180" class="t-red">iptables</text>
+        <text x="655" y="206" class="t-sm">DNAT / MASQUERADE</text>
+        <text x="655" y="290">host eth0</text>
+        <text x="655" y="312" class="t-code">192.168.1.10</text>
+        <text x="600" y="385" class="t-big">Internet</text>
+        <text x="222" y="100" class="t-pen t-sm">veth juftligi</text>
+        <text x="200" y="36" class="t-pen t-sm">Host</text>
+      </g>
+    </svg>
+  </div>
+
+  <div class="box-grid">
+    <div class="card"><h4>Chiquvchi trafik</h4><p>Konteyner internetga chiqqanda iptables <b>MASQUERADE</b> qoidasi manbani host IP'siga almashtiradi (NAT). Tashqi dunyo faqat host'ni ko'radi.</p></div>
+    <div class="card"><h4>Kiruvchi trafik (-p)</h4><p><span class="term">-p 8080:80</span> host'ning 8080-portiga kelgan paketni <b>DNAT</b> qoidasi bilan <span class="term">172.17.0.2:80</span>ga yo'naltiradi. Yordamchi <span class="term">docker-proxy</span> jarayoni ham ishga tushadi.</p></div>
+    <div class="card"><h4>Ichki DNS</h4><p>O'zing yaratgan tarmoqda konteynerlar bir-birini <b>nomi</b> bilan topadi: <span class="term">ping db</span>. Buni <span class="term">127.0.0.11</span> dagi ichki DNS qiladi. Standart <span class="term">bridge</span>da bu ishlamaydi!</p></div>
+  </div>
+
+  <h3>Konteyner ichidagi tarmoq fayllari</h3>
+  <ul>
+    <li><span class="term">/etc/hostname</span> — konteyner nomi (qisqa ID).</li>
+    <li><span class="term">/etc/hosts</span> — o'z IP'si va <span class="term">--add-host</span> bilan qo'shilgan yozuvlar.</li>
+    <li><span class="term">/etc/resolv.conf</span> — DNS server manzili (host'dan yoki 127.0.0.11).</li>
+  </ul>
+  <p class="pencil">Bu uch fayl image'da yo'q. Docker ularni ishga tushirish paytida <span class="term">containers/&lt;id&gt;/</span> papkasidan bind mount qiladi.</p>
+<pre>ip addr show docker0                          <span class="c"># host'dagi ko'prik</span>
+bridge link                                   <span class="c"># qaysi veth'lar ulangan</span>
+sudo iptables -t nat -L DOCKER -n             <span class="c"># -p uchun DNAT qoidalari</span>
+<span class="k">docker</span> exec lab cat /etc/resolv.conf
+<span class="k">docker</span> network inspect bridge --format "{{json .IPAM.Config}}"</pre>
+  <div class="sticky l">Port «bandmi?» xatosi: <span class="term">bind: address already in use</span> — host'dagi o'sha port boshqa dastur yoki boshqa konteyner tomonidan band.</div>
+</section>
+
+<!-- ============================ PID 1 ============================ -->
+<section class="sheet" id="pid1">
+  <div class="sheet-head"><span class="sheet-no"></span><span>II bo'lim: Konteyner ichidan</span></div>
+  <h2>PID 1 va signallar</h2>
+  <p class="lead">Konteyner <b>PID 1 jarayoni tirik ekan</b> tirik bo'ladi. PID 1 tugasa, konteyner ham to'xtaydi. Shuning uchun konteyner ichida nginx <span class="term">daemon off;</span> bilan (oldingi rejimda) ishlaydi.</p>
+
+  <h3>docker stop qanday ishlaydi</h3>
+  <div class="fig">
+    <svg viewBox="0 0 760 270" role="img" aria-label="docker stop vaqt chizig'i: SIGTERM, 10 soniya kutish, SIGKILL">
+      <g class="rough">
+        <path class="ln" d="M80,225 L720,225" marker-end="url(#ar)"/>
+        <path class="ln" d="M80,219 L80,231 M140,219 L140,231 M200,219 L200,231 M260,219 L260,231 M320,219 L320,231 M380,219 L380,231 M440,219 L440,231 M500,219 L500,231 M560,219 L560,231 M620,219 L620,231 M680,219 L680,231"/>
+        <path class="ln-pen" d="M80,30 L80,215 M680,30 L680,215"/>
+        <path class="ln-green" d="M80,95 L140,95" style="stroke-width:5"/>
+        <circle class="ln-green" cx="140" cy="95" r="7"/>
+        <path class="ln-red dash" d="M80,175 L680,175" style="stroke-width:4"/>
+        <path class="ln-red" d="M672,160 L690,175 L676,176 L692,192" />
+      </g>
+      <g class="t-code" text-anchor="middle">
+        <text x="80" y="250">0</text><text x="140" y="250">1</text><text x="200" y="250">2</text><text x="260" y="250">3</text><text x="320" y="250">4</text><text x="380" y="250">5</text><text x="440" y="250">6</text><text x="500" y="250">7</text><text x="560" y="250">8</text><text x="620" y="250">9</text><text x="680" y="250">10 s</text>
+      </g>
+      <text x="88" y="26" class="t-red t-sm">docker stop → SIGTERM</text>
+      <text x="672" y="26" class="t-red t-sm" text-anchor="end">vaqt tugadi → SIGKILL</text>
+      <text x="90" y="72" class="t-green">exec forma: dastur SIGTERM'ni oladi va toza chiqadi</text>
+      <text x="160" y="100" class="t-sm t-green">exit 0 (yoki 143)</text>
+      <text x="90" y="152" class="t-red">shell forma: sh signalni uzatmaydi, dastur kutadi…</text>
+      <text x="590" y="205" class="t-red t-sm" text-anchor="end">majburan o'ldiriladi: exit 137</text>
+    </svg>
+  </div>
+  <p class="cap">Kutish vaqtini o'zgartirish: <span class="term">docker stop -t 30 lab</span>; signalni Dockerfile'dagi <span class="term">STOPSIGNAL</span> almashtiradi.</p>
+
+  <h3>Shell forma va exec forma</h3>
+  <div class="row">
+    <div>
+      <p class="red"><b>Yomon (shell forma):</b></p>
+<pre><span class="k">CMD</span> node server.js
+<span class="c"># aslida: /bin/sh -c "node server.js"</span>
+<span class="c"># PID 1 = sh, node esa uning bolasi</span></pre>
+    </div>
+    <div>
+      <p class="green"><b>Yaxshi (exec forma):</b></p>
+<pre><span class="k">CMD</span> [<span class="s">"node"</span>, <span class="s">"server.js"</span>]
+<span class="c"># PID 1 = node, signallarni</span>
+<span class="c"># to'g'ridan-to'g'ri oladi</span></pre>
+    </div>
+  </div>
+
+  <h3>PID 1 ning uch xususiyati</h3>
+  <ol>
+    <li><b>Standart signal ishlovchilari yo'q.</b> Oddiy jarayon SIGTERM'da o'ladi, PID 1 esa uni o'zi ushlamasa e'tiborsiz qoldiradi.</li>
+    <li><b>Zombi jarayonlarni «ko'mish»</b> (reaping) uning vazifasi. Dastur buni qilmasa, zombi jarayonlar to'planib qoladi.</li>
+    <li><b>U o'lsa — hammasi o'ladi.</b> Konteynerdagi qolgan jarayonlar ham SIGKILL oladi.</li>
+  </ol>
+  <p>Yechim: <span class="term">docker run --init</span>. Bu PID 1 sifatida kichik <b>tini</b> init jarayonini qo'yadi: u signallarni uzatadi va zombilarni tozalaydi.</p>
+
+  <h3>ENTRYPOINT + CMD birgalikda</h3>
+<pre><span class="k">ENTRYPOINT</span> [<span class="s">"/docker-entrypoint.sh"</span>]     <span class="c"># doim ishlaydi</span>
+<span class="k">CMD</span> [<span class="s">"nginx"</span>, <span class="s">"-g"</span>, <span class="s">"daemon off;"</span>]       <span class="c"># entrypoint'ga argument</span>
+<span class="c"># natija: /docker-entrypoint.sh nginx -g "daemon off;"</span>
+<span class="c"># skript oxirida:  exec "$@"   ← PID 1 ni nginx'ga topshiradi!</span></pre>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>docker run …</th><th>Nima ishga tushadi</th></tr></thead>
+      <tbody>
+        <tr><td>docker run img</td><td>ENTRYPOINT + CMD</td></tr>
+        <tr><td>docker run img sh</td><td>ENTRYPOINT + <b>sh</b> (CMD almashtirildi)</td></tr>
+        <tr><td>--entrypoint sh img</td><td>Faqat sh (ENTRYPOINT almashtirildi, CMD tashlab yuboriladi)</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============================ HOLATLAR ============================ -->
+<section class="sheet" id="holatlar">
+  <div class="sheet-head"><span class="sheet-no"></span><span>II bo'lim: Konteyner ichidan</span></div>
+  <h2>Holatlar, exit kodlar, restart</h2>
+
+  <h3>Konteynerning 7 holati</h3>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Holat</th><th>Ma'nosi</th></tr></thead>
+      <tbody>
+        <tr><td>created</td><td>Yaratilgan (<span class="term">docker create</span>), lekin hali ishga tushmagan</td></tr>
+        <tr><td>running</td><td>PID 1 ishlayapti</td></tr>
+        <tr><td>paused</td><td>cgroup freezer bilan muzlatilgan</td></tr>
+        <tr><td>restarting</td><td>Restart siyosati bo'yicha qayta ko'tarilmoqda</td></tr>
+        <tr><td>exited</td><td>To'xtagan; fayl tizimi va loglari hali saqlanadi</td></tr>
+        <tr><td>removing</td><td>O'chirilish jarayonida</td></tr>
+        <tr><td>dead</td><td>O'chirib bo'lmadi (masalan, qurilma band), qo'lda tozalash kerak</td></tr>
+      </tbody>
+    </table>
+  </div>
+<pre><span class="k">docker</span> ps -a --filter status=exited
+<span class="k">docker</span> inspect -f "{{.State.Status}} {{.State.ExitCode}} {{.State.StartedAt}}" lab</pre>
+
+  <h3>Exit kodlar — konteyner nega o'ldi?</h3>
+  <div class="fig small">
+    <svg viewBox="0 0 760 120" role="img" aria-label="Exit kod 128 dan katta bo'lsa, 128 + signal raqami formulasi">
+      <g class="rough"><rect class="ln f-y" x="150" y="20" width="460" height="70" rx="10"/></g>
+      <text x="380" y="64" text-anchor="middle" class="t-big">exit kod = 128 + signal raqami</text>
+      <text x="380" y="112" text-anchor="middle" class="t-pen t-sm">137 = 128 + 9 (SIGKILL)   ·   143 = 128 + 15 (SIGTERM)   ·   139 = 128 + 11 (SIGSEGV)</text>
+    </svg>
+  </div>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Kod</th><th>Sababi</th><th>Nima qilish kerak</th></tr></thead>
+      <tbody>
+        <tr><td>0</td><td>Muvaffaqiyatli tugadi</td><td>Hammasi joyida (bir martalik vazifa bo'lsa)</td></tr>
+        <tr><td>1</td><td>Dasturning o'z xatosi</td><td><span class="term">docker logs</span> ni o'qi</td></tr>
+        <tr><td>125</td><td><span class="term">docker run</span> buyrug'ining o'zi xato</td><td>Bayroqlarni tekshir</td></tr>
+        <tr><td>126</td><td>Buyruqni bajarib bo'lmadi (ruxsat yo'q)</td><td><span class="term">chmod +x</span></td></tr>
+        <tr><td>127</td><td>Buyruq topilmadi</td><td>Yo'l yoki image'ni tekshir</td></tr>
+        <tr><td>137</td><td>SIGKILL: OOM yoki <span class="term">docker kill</span> / stop vaqti tugadi</td><td>OOMKilled'ni tekshir, RAM limitini oshir</td></tr>
+        <tr><td>139</td><td>Segmentation fault</td><td>Dasturda xotira xatosi</td></tr>
+        <tr><td>143</td><td>SIGTERM bilan to'xtatildi</td><td>Odatda normal to'xtatish</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Restart siyosatlari</h3>
+  <div class="box-grid">
+    <div class="card"><h4>no</h4><p>Standart. O'zi qayta ko'tarilmaydi.</p></div>
+    <div class="card"><h4>on-failure[:5]</h4><p>Faqat exit kodi 0 bo'lmasa, 5 martagacha qayta urinadi.</p></div>
+    <div class="card"><h4>always</h4><p>Doim qayta ko'taradi, daemon qayta yoqilganda ham.</p></div>
+    <div class="card"><h4>unless-stopped</h4><p>always kabi, lekin qo'lda to'xtatilgan bo'lsa, qayta yoqilmaydi. Serverlar uchun eng qulayi.</p></div>
+  </div>
+  <p class="pencil">Qayta urinishlar orasidagi kutish vaqti har safar ikki barobar oshadi (100 ms, 200 ms, 400 ms …), shunda to'xtovsiz qulayotgan konteyner serverni band qilmaydi.</p>
+
+  <h3>Loglar qayerga ketadi</h3>
+  <p>Docker konteynerning <b>stdout</b> va <b>stderr</b> oqimlarini ushlab, log drayverga beradi. Standart drayver — <span class="term">json-file</span>. U cheklanmasa, disk to'lib qolishi mumkin!</p>
+<pre><span class="k">docker</span> run -d --log-opt max-size=10m --log-opt max-file=3 nginx
+<span class="k">docker</span> logs --since 10m --tail 100 -f lab</pre>
+  <div class="sticky">Shuning uchun kursda nginx loglari <span class="term">ln -sf /dev/stdout /var/log/nginx/access.log</span> bilan konsolga yo'naltirilgan edi!</div>
+</section>
+
+<!-- ============================ XAVFSIZLIK ============================ -->
+<section class="sheet" id="xavfsizlik">
+  <div class="sheet-head"><span class="sheet-no"></span><span>II bo'lim: Konteyner ichidan</span></div>
+  <h2>Xavfsizlik qatlamlari</h2>
+  <p class="lead">Konteynerlar host yadrosini bo'lishadi, shuning uchun himoya bir necha qavatdan iborat. Piyoz kabi: bittasi yorilsa, keyingisi ushlab qoladi.</p>
+
+  <div class="fig">
+    <svg viewBox="0 0 760 360" role="img" aria-label="Xavfsizlik qatlamlari piyoz ko'rinishida: namespaces, cgroups, capabilities, seccomp, AppArmor, markazda jarayon">
+      <g class="rough">
+        <ellipse class="ln f-b" cx="250" cy="180" rx="230" ry="165"/>
+        <ellipse class="ln f-paper" cx="250" cy="180" rx="190" ry="135"/>
+        <ellipse class="ln f-g" cx="250" cy="180" rx="150" ry="107"/>
+        <ellipse class="ln f-paper" cx="250" cy="180" rx="112" ry="80"/>
+        <ellipse class="ln f-r" cx="250" cy="180" rx="76" ry="54"/>
+        <ellipse class="ln f-y" cx="250" cy="180" rx="40" ry="28"/>
+      </g>
+      <g text-anchor="middle">
+        <text x="250" y="38">Namespaces</text>
+        <text x="250" y="68">cgroups</text>
+        <text x="250" y="96" class="t-green">Capabilities</text>
+        <text x="250" y="123">Seccomp</text>
+        <text x="250" y="150" class="t-red t-sm">AppArmor</text>
+        <text x="250" y="187" class="t-sm">jarayon</text>
+      </g>
+      <g class="t-sm">
+        <text x="510" y="50"><tspan class="t-big">1.</tspan> nimani ko'radi</text>
+        <text x="510" y="90"><tspan class="t-big">2.</tspan> qancha resurs oladi</text>
+        <text x="510" y="130"><tspan class="t-big">3.</tspan> root'ning qaysi huquqlari bor</text>
+        <text x="510" y="170"><tspan class="t-big">4.</tspan> qaysi syscall'lar taqiqlangan</text>
+        <text x="510" y="210"><tspan class="t-big">5.</tspan> qaysi fayllarga tegishi mumkin</text>
+        <text x="510" y="250"><tspan class="t-big">6.</tspan> USER: root emas!</text>
+        <text x="510" y="290" class="t-red">--privileged = hammasini</text>
+        <text x="510" y="312" class="t-red">o'chirish. Xavfli!</text>
+      </g>
+    </svg>
+  </div>
+
+  <h3>Capabilities: root'ni bo'laklarga ajratish</h3>
+  <p>Linux'da root'ning kuchi ~40 ta alohida <b>capability</b>ga bo'lingan. Docker standart holatda faqat 14 tasini qoldiradi: <span class="term">CHOWN</span>, <span class="term">DAC_OVERRIDE</span>, <span class="term">FOWNER</span>, <span class="term">FSETID</span>, <span class="term">KILL</span>, <span class="term">SETGID</span>, <span class="term">SETUID</span>, <span class="term">SETPCAP</span>, <span class="term">NET_BIND_SERVICE</span>, <span class="term">NET_RAW</span>, <span class="term">SYS_CHROOT</span>, <span class="term">MKNOD</span>, <span class="term">AUDIT_WRITE</span>, <span class="term">SETFCAP</span>. Masalan, <span class="term">SYS_ADMIN</span> (mount va boshqalar) yo'q.</p>
+<pre><span class="k">docker</span> run --cap-drop ALL --cap-add NET_BIND_SERVICE myapp   <span class="c"># minimal huquq</span></pre>
+
+  <div class="box-grid">
+    <div class="card"><h4>Seccomp</h4><p>Standart profil xavfli tizim chaqiruvlarini (syscall) bloklaydi: <span class="term">reboot</span>, <span class="term">kexec_load</span>, <span class="term">mount</span> va boshqalar.</p></div>
+    <div class="card"><h4>AppArmor / SELinux</h4><p>Yadro darajasida fayl va resurslarga kirish qoidalari. Ubuntu'da <span class="term">docker-default</span> AppArmor profili.</p></div>
+    <div class="card"><h4>User namespace</h4><p><span class="term">userns-remap</span> yoki <b>rootless</b> rejim: ichkaridagi root host'da huquqsiz foydalanuvchi bo'ladi.</p></div>
+    <div class="card"><h4>Read-only rootfs</h4><p><span class="term">--read-only --tmpfs /tmp</span>: hujumchi fayl yozib qo'ya olmaydi.</p></div>
+  </div>
+
+  <h3>Xavfsiz ishga tushirish namunasi</h3>
+<pre><span class="k">docker</span> run -d --name api \
+  --user 1000:1000 \
+  --read-only --tmpfs /tmp \
+  --cap-drop ALL \
+  --security-opt no-new-privileges \
+  -m 256m --cpus 1 --pids-limit 200 \
+  myname/api:1.4.2</pre>
+
+  <h3 class="red" style="color:var(--red)">Hech qachon qilma</h3>
+  <ul>
+    <li><span class="term">-v /var/run/docker.sock:/var/run/docker.sock</span> ni ishonchsiz konteynerga berish. Bu host'da <b>root</b> degani.</li>
+    <li>Sababsiz <span class="term">--privileged</span>.</li>
+    <li>Parol va kalitlarni <span class="term">ENV</span> yoki image ichiga yozish. Ular <span class="term">docker history</span> va <span class="term">inspect</span>da ko'rinadi. Build uchun <span class="term">RUN --mount=type=secret</span> ishlat.</li>
+    <li>Noma'lum muallifning image'ini tekshirmasdan ishlatish. <span class="term">docker scout cves</span> bilan tekshir.</li>
+  </ul>
+</section>
+
+<!-- ============================ LAB ============================ -->
+<section class="sheet" id="lab">
+  <div class="sheet-head"><span class="sheet-no"></span><span>II bo'lim: Konteyner ichidan</span></div>
+  <h2>Amaliyot: konteynerni ochib ko'ramiz</h2>
+  <p class="lead">O'rganganlarimizni bitta konteynerda qadamma-qadam tekshiramiz. Linux host kerak; Docker Desktop'da <span class="term">/proc</span> va <span class="term">/var/lib/docker</span> qadamlari VM ichida bo'ladi.</p>
+
+  <h3><span class="n">1.</span>Ishga tushiramiz</h3>
+<pre><span class="k">docker</span> run -d --name lab -m 64m --cpus 0.5 -p 8080:80 nginx:alpine
+curl -I localhost:8080          <span class="c"># HTTP/1.1 200 OK</span></pre>
+
+  <h3><span class="n">2.</span>Jarayonlar (PID namespace)</h3>
+<pre><span class="k">docker</span> top lab                  <span class="c"># host ko'radigan PID'lar: 4321, 4350…</span>
+<span class="k">docker</span> exec lab ps              <span class="c"># ichkarida: 1 nginx: master, 7 nginx: worker</span></pre>
+
+  <h3><span class="n">3.</span>Hostname va tarmoq (uts, net)</h3>
+<pre><span class="k">docker</span> exec lab hostname        <span class="c"># 3f9a1c7d2e4b (qisqa ID)</span>
+<span class="k">docker</span> exec lab ip addr show eth0
+<span class="k">docker</span> inspect -f "{{.NetworkSettings.IPAddress}}" lab</pre>
+
+  <h3><span class="n">4.</span>Fayl tizimi (UFS / overlay2)</h3>
+<pre><span class="k">docker</span> exec lab sh -c "echo salom &gt; /salom.txt; rm /etc/nginx/conf.d/default.conf"
+<span class="k">docker</span> diff lab
+<span class="c"># A /salom.txt                      ← qo'shildi (Added)</span>
+<span class="c"># C /etc/nginx/conf.d               ← o'zgardi (Changed)</span>
+<span class="c"># D /etc/nginx/conf.d/default.conf  ← o'chirildi (Deleted) = whiteout</span>
+sudo ls $(<span class="k">docker</span> inspect -f "{{.GraphDriver.Data.UpperDir}}" lab)</pre>
+
+  <h3><span class="n">5.</span>Limitlar (cgroups)</h3>
+<pre><span class="k">docker</span> stats --no-stream lab    <span class="c"># LIMIT ustunida 64MiB</span>
+<span class="k">docker</span> exec lab cat /sys/fs/cgroup/memory.max   <span class="c"># 67108864</span>
+<span class="k">docker</span> exec lab cat /sys/fs/cgroup/cpu.max      <span class="c"># 50000 100000</span></pre>
+
+  <h3><span class="n">6.</span>Metama'lumot va loglar</h3>
+<pre><span class="k">docker</span> inspect lab | less        <span class="c"># to'liq JSON: Config, HostConfig, State, Mounts</span>
+<span class="k">docker</span> logs lab                  <span class="c"># curl so'rovimiz ko'rinadi</span>
+sudo ls /var/lib/docker/containers/$(<span class="k">docker</span> inspect -f "{{.Id}}" lab)/</pre>
+
+  <h3><span class="n">7.</span>Holatdan image yasash va tozalash</h3>
+<pre><span class="k">docker</span> commit lab lab-image:v1  <span class="c"># R/W qatlam yangi image qatlamiga aylanadi</span>
+<span class="k">docker</span> image history lab-image:v1
+<span class="k">docker</span> export lab -o lab.tar     <span class="c"># butun merged fayl tizimi bitta tar'da</span>
+<span class="k">docker</span> rm -f lab &amp;&amp; <span class="k">docker</span> image rm lab-image:v1</pre>
+
+  <div class="row">
+    <div class="sticky">Uy vazifasi: <span class="term">-m 10m</span> bilan konteyner ochib, ichida katta fayl yaratib ko'r va exit kodini kuzat.</div>
+    <div>
+      <p><b>commit</b> va <b>export</b> farqi:</p>
+      <ul>
+        <li><b>commit</b> → qatlamlar va tarix saqlanadi, natija image.</li>
+        <li><b>export</b> → faqat fayllar, bitta tekis tar; tarix va Config yo'qoladi.</li>
+        <li>Ikkalasi ham faqat o'rganish uchun. Doimiy image'ni <b>Dockerfile</b> bilan yig'!</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 4-VARAQ ============================ -->
+<section class="sheet" id="imkoniyatlar">
+  <div class="sheet-head"><span class="sheet-no"></span><span>III bo'lim: Imkoniyatlar</span></div>
+  <h2>Docker'ning barcha imkoniyatlari</h2>
+  <ol class="toc">
+    <li>Konteynerlarni boshqarish</li><li>Image va teglar</li><li>Dockerfile</li><li>Ma'lumot saqlash (volumes)</li>
+    <li>Tarmoq (network)</li><li>Docker Compose</li><li>Registry va avtomatik build</li><li>Resurslar, healthcheck, loglar</li><li>Orkestratsiya va qo'shimchalar</li>
+  </ol>
+
+  <h3><span class="n">1.</span>Konteynerlarni boshqarish</h3>
+  <p>Konteynerning hayot sikli:</p>
+  <div class="fig">
+    <svg viewBox="0 0 760 240" role="img" aria-label="Konteyner holatlari: created, running, paused, stopped, removed">
+      <g class="rough">
+        <ellipse class="ln f-paper" cx="95" cy="70" rx="80" ry="32"/>
+        <ellipse class="ln f-g" cx="330" cy="70" rx="85" ry="34"/>
+        <ellipse class="ln f-y" cx="590" cy="70" rx="80" ry="32"/>
+        <ellipse class="ln f-r" cx="330" cy="190" rx="92" ry="34"/>
+        <ellipse class="ln f-paper" cx="610" cy="190" rx="80" ry="32"/>
+        <path class="ln" d="M175,70 L240,70" marker-end="url(#ar)"/>
+        <path class="ln" d="M412,58 Q460,40 508,58" marker-end="url(#ar)"/>
+        <path class="ln" d="M508,84 Q460,102 412,84" marker-end="url(#ar)"/>
+        <path class="ln" d="M312,104 L312,154" marker-end="url(#ar)"/>
+        <path class="ln-green" d="M350,156 L350,106" marker-end="url(#ar-green)"/>
+        <path class="ln" d="M422,190 L526,190" marker-end="url(#ar)"/>
+      </g>
+      <g text-anchor="middle">
+        <text x="95" y="77">created</text>
+        <text x="330" y="77" class="t-big">running</text>
+        <text x="590" y="77">paused</text>
+        <text x="330" y="197">stopped (exited)</text>
+        <text x="610" y="197">o'chirilgan</text>
+        <text x="208" y="60" class="t-code">start</text>
+        <text x="460" y="36" class="t-code">pause</text>
+        <text x="460" y="118" class="t-code">unpause</text>
+        <text x="258" y="134" class="t-code">stop/kill</text>
+        <text x="410" y="134" class="t-code">start</text>
+        <text x="474" y="180" class="t-code">rm</text>
+        <text x="95" y="24" class="t-red t-sm">docker run = create + start</text>
+      </g>
+    </svg>
+  </div>
+<pre><span class="k">docker</span> run -d -p 8080:80 --name proxy nginx   <span class="c"># fonda, port, nom bilan</span>
+<span class="k">docker</span> run -it --rm alpine sh                  <span class="c"># interaktiv, chiqqach o'chadi</span>
+<span class="k">docker</span> run -e MODE=production -v data:/app/data myapp
+<span class="k">docker</span> ps -a                     <span class="c"># barcha konteynerlar</span>
+<span class="k">docker</span> logs -f proxy             <span class="c"># loglarni jonli kuzatish</span>
+<span class="k">docker</span> exec -it proxy bash       <span class="c"># ishlab turgan konteyner ichiga kirish</span>
+<span class="k">docker</span> stop proxy &amp;&amp; <span class="k">docker</span> rm proxy     <span class="c"># yoki: docker rm -f proxy</span>
+<span class="k">docker</span> cp ./index.html proxy:/usr/share/nginx/html/
+<span class="k">docker</span> inspect proxy --format "{{ .NetworkSettings.IPAddress }}"
+<span class="k">docker</span> commit proxy myimage:v1   <span class="c"># konteyner holatidan image yasash</span></pre>
+  <p class="pencil">Boshqa foydali buyruqlar: <span class="term">top</span>, <span class="term">stats</span>, <span class="term">rename</span>, <span class="term">restart</span>, <span class="term">wait</span>, <span class="term">port</span>, <span class="term">diff</span>, <span class="term">export/import</span>, <span class="term">update</span>.</p>
+
+  <h3><span class="n">2.</span>Image va teglar</h3>
+  <p>Image nomi: <span class="term">[registry/][foydalanuvchi/]nom[:teg]</span>. Teg ko'rsatilmasa — <span class="term">:latest</span>. Masalan <span class="term">alpine:3.9</span> va <span class="term">alpine:latest</span> bir xil image bo'lishi mumkin (bir ID, ikki nom).</p>
+<pre><span class="k">docker</span> image pull nginx:1.16.0
+<span class="k">docker</span> image ls                         <span class="c"># REPOSITORY, TAG, IMAGE ID, CREATED, SIZE</span>
+<span class="k">docker</span> image history nginx             <span class="c"># qaysi qatlamlardan tuzilgan</span>
+<span class="k">docker</span> image tag nginx myname/nginx:v1
+<span class="k">docker</span> image push myname/nginx:v1
+<span class="k">docker</span> save -o nginx.tar nginx  /  <span class="k">docker</span> load -i nginx.tar   <span class="c"># internetsiz ko'chirish</span>
+<span class="k">docker</span> image prune                      <span class="c"># &lt;none&gt; "osilib qolgan" image'larni tozalash</span></pre>
+  <p><b>alpine</b> — atigi ≈5 MB'lik minimal Linux. Kichik image = tez yuklanadi, xavfsizroq.</p>
+
+  <h3><span class="n">3.</span>Dockerfile</h3>
+<pre><span class="k">FROM</span> nginx:1.16.0                       <span class="c"># asosiy image</span>
+<span class="k">LABEL</span> version="1.0" maintainer="Lectrum LLC"
+<span class="k">ENV</span> WORKDIR /usr/share/nginx/html
+<span class="k">WORKDIR</span> ${WORKDIR}                      <span class="c"># ishchi papka</span>
+<span class="k">RUN</span> apt-get update \
+    &amp;&amp; apt-get install curl -y \
+    &amp;&amp; ln -sf /dev/stdout /var/log/nginx/access.log
+<span class="k">COPY</span> index.html index.html
+<span class="k">EXPOSE</span> 80
+<span class="k">HEALTHCHECK</span> --interval=10s CMD curl -f localhost/ || exit 1
+<span class="k">CMD</span> [<span class="s">"nginx"</span>, <span class="s">"-g"</span>, <span class="s">"daemon off;"</span>]</pre>
+  <p class="pencil">Yig'ish: <span class="term">docker build -t myname/site:1.0 .</span></p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Ko'rsatma</th><th>Ma'nosi</th></tr></thead>
+      <tbody>
+        <tr><td>FROM</td><td>Qaysi image'dan boshlanadi (majburiy, birinchi qator)</td></tr>
+        <tr><td>RUN</td><td>Build vaqtida buyruq bajaradi → yangi qatlam. <b>&amp;&amp;</b> bilan birlashtirsang, qatlam kam bo'ladi</td></tr>
+        <tr><td>COPY / ADD</td><td>Fayllarni image'ga nusxalaydi (ADD arxivni ochadi va URL'dan yuklay oladi)</td></tr>
+        <tr><td>WORKDIR</td><td>Keyingi buyruqlar uchun ishchi papka</td></tr>
+        <tr><td>ENV / ARG</td><td>Muhit o'zgaruvchisi (runtime'da ham bor) / faqat build vaqtidagi argument</td></tr>
+        <tr><td>EXPOSE</td><td>Konteyner qaysi portni tinglashini hujjatlaydi</td></tr>
+        <tr><td>VOLUME</td><td>Ma'lumot saqlanadigan papkani belgilaydi</td></tr>
+        <tr><td>USER</td><td>Qaysi foydalanuvchi nomidan ishlash (root bo'lmagani xavfsizroq)</td></tr>
+        <tr><td>CMD</td><td>Konteyner ishga tushganda bajariladigan standart buyruq (<span class="term">docker run</span>da almashtirsa bo'ladi)</td></tr>
+        <tr><td>ENTRYPOINT</td><td>Asosiy bajariluvchi fayl; CMD unga argument bo'ladi</td></tr>
+        <tr><td>HEALTHCHECK</td><td>Konteyner «sog'»ligini tekshirish buyrug'i</td></tr>
+        <tr><td>LABEL, STOPSIGNAL</td><td>Meta-ma'lumot; to'xtatish signali</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p><b>Multi-stage build</b> — bitta Dockerfile'da bir necha <span class="term">FROM</span>. Birinchi bosqichda kod yig'iladi, yakuniy image'ga faqat natija ko'chiriladi. Image 1 GB'dan 30 MB'gacha kichrayishi mumkin:</p>
+<pre><span class="k">FROM</span> node:20 <span class="k">AS</span> build
+<span class="k">WORKDIR</span> /app
+<span class="k">COPY</span> package*.json ./
+<span class="k">RUN</span> npm ci                     <span class="c"># node_modules'ni COPY qilma, shu yerda o'rnat</span>
+<span class="k">COPY</span> . .
+<span class="k">RUN</span> npm run build
+
+<span class="k">FROM</span> nginx:alpine
+<span class="k">COPY</span> --from=build /app/build /usr/share/nginx/html</pre>
+  <p class="pencil"><span class="term">.dockerignore</span> faylida <span class="term">node_modules</span>, <span class="term">.git</span> kabilarni yoz — build tezlashadi.</p>
+</section>
+
+<!-- ============================ 5-VARAQ ============================ -->
+<section class="sheet" id="imkoniyatlar-2">
+  <div class="sheet-head"><span class="sheet-no"></span><span>III bo'lim: Imkoniyatlar (davomi)</span></div>
+
+  <h3 style="margin-top:6px"><span class="n">4.</span>Ma'lumot saqlash: volumes</h3>
+  <p>Konteyner o'chsa, ichidagi yozilgan fayllar ham o'chadi. Ma'lumotni saqlab qolishning <b>uch</b> yo'li bor:</p>
+  <div class="fig">
+    <svg viewBox="0 0 760 310" role="img" aria-label="Uch xil mount: bind mount, volume va tmpfs">
+      <g class="rough">
+        <rect class="ln f-g" x="230" y="20" width="300" height="70" rx="8"/>
+        <rect class="ln f-paper" x="20" y="160" width="720" height="130" rx="8"/>
+        <rect class="ln f-b" x="40" y="195" width="450" height="80" rx="6"/>
+        <rect class="ln f-y" x="520" y="195" width="200" height="80" rx="6"/>
+        <rect class="ln f-paper" x="60" y="220" width="185" height="42" rx="4"/>
+        <rect class="ln f-paper" x="265" y="220" width="210" height="42" rx="4"/>
+        <path class="ln" d="M285,90 L160,216" marker-end="url(#ar)"/>
+        <path class="ln-green" d="M380,90 L370,216" marker-end="url(#ar-green)"/>
+        <path class="ln-red" d="M475,90 L610,236" marker-end="url(#ar-red)"/>
+      </g>
+      <g text-anchor="middle">
+        <text x="380" y="52" class="t-big">Konteyner</text>
+        <text x="380" y="76" class="t-code">/usr/share/nginx/html</text>
+        <text x="380" y="184" class="t-pen">Host mashina</text>
+        <text x="265" y="214" class="t-sm">Fayl tizimi (disk)</text>
+        <text x="620" y="214" class="t-sm">Xotira (RAM)</text>
+        <text x="152" y="246" class="t-code">./data (istalgan)</text>
+        <text x="370" y="246" class="t-code">/var/lib/docker/volumes</text>
+        <text x="620" y="258" class="t-code">tmpfs</text>
+        <text x="190" y="135">bind mount</text>
+        <text x="340" y="140" class="t-green">volume</text>
+        <text x="570" y="140" class="t-red">tmpfs</text>
+      </g>
+    </svg>
+  </div>
+  <div class="box-grid">
+    <div class="card"><h4>Volume</h4><p>Docker o'zi boshqaradigan joy. Eng to'g'ri tanlov: ma'lumotlar bazasi, yuklangan fayllar.</p><p class="term">-v nginx-vol:/usr/share/nginx/html</p></div>
+    <div class="card"><h4>Bind mount</h4><p>Host'dagi aniq papkani ulash. Ishlab chiqishda qulay: kodni o'zgartirsang, konteynerda darhol ko'rinadi.</p><p class="term">-v $(pwd)/site:/usr/share/nginx/html</p></div>
+    <div class="card"><h4>tmpfs</h4><p>Faqat RAM'da, diskka yozilmaydi. Vaqtinchalik yoki maxfiy fayllar uchun.</p><p class="term">--mount type=tmpfs,destination=/cache</p></div>
+  </div>
+<pre><span class="k">docker</span> volume create nginx-vol
+<span class="k">docker</span> run -d --mount source=nginx-vol,destination=/usr/share/nginx/html,readonly nginx:alpine
+<span class="k">docker</span> volume ls | inspect | rm | prune</pre>
+
+  <h3><span class="n">5.</span>Tarmoq (network)</h3>
+  <p>Konteynerlar bir-biri bilan va tashqi dunyo bilan tarmoq orqali gaplashadi. Drayverlar:</p>
+  <ul>
+    <li><b>bridge</b> — standart. Bitta host ichidagi virtual «switch». O'zing yaratgan bridge'da konteynerlar bir-birini <span class="hl">nomi bilan</span> topadi (ichki DNS).</li>
+    <li><b>host</b> — konteyner host tarmog'ini to'g'ridan-to'g'ri ishlatadi (izolyatsiyasiz, tezroq).</li>
+    <li><b>none</b> — tarmoq umuman yo'q.</li>
+    <li><b>overlay</b> — bir nechta serverdagi konteynerlarni bitta tarmoqqa bog'laydi (Swarm).</li>
+    <li><b>macvlan</b> — konteynerga haqiqiy MAC manzil beradi, u tarmoqda alohida qurilmadek ko'rinadi.</li>
+  </ul>
+  <p>Kursdagi <b>fullstack</b> misoli: <span class="term">proxy</span> ikkala tarmoqda, <span class="term">db</span> esa tashqaridan umuman ko'rinmaydi:</p>
+  <div class="fig">
+    <svg viewBox="0 0 760 300" role="img" aria-label="front va back tarmoqlari: proxy ikkalasida, webhost frontda, api va db backda">
+      <g class="rough">
+        <rect class="ln-green dash f-g" x="170" y="20" width="330" height="170" rx="18" style="fill-opacity:.5"/>
+        <rect class="ln-red dash f-r" x="300" y="120" width="440" height="170" rx="18" style="fill-opacity:.6"/>
+        <rect class="ln f-paper" x="15" y="132" width="120" height="44" rx="6"/>
+        <rect class="ln f-y" x="340" y="132" width="120" height="44" rx="6"/>
+        <rect class="ln f-paper" x="190" y="40" width="130" height="44" rx="6"/>
+        <rect class="ln f-paper" x="520" y="150" width="120" height="44" rx="6"/>
+        <rect class="ln f-paper" x="540" y="228" width="150" height="44" rx="6"/>
+        <path class="ln" d="M135,154 L334,154" marker-end="url(#ar)"/>
+        <path class="ln" d="M370,130 L300,88" marker-end="url(#ar)"/>
+        <path class="ln" d="M460,160 L514,168" marker-end="url(#ar)"/>
+        <path class="ln" d="M590,194 L605,224" marker-end="url(#ar)"/>
+      </g>
+      <g text-anchor="middle">
+        <text x="75" y="160">Brauzer</text>
+        <text x="235" y="146" class="t-code">-p 80:80</text>
+        <text x="400" y="160">proxy</text>
+        <text x="255" y="68">webhost</text>
+        <text x="580" y="178">api :4000</text>
+        <text x="615" y="256">db (mongo:4)</text>
+        <text x="440" y="46" class="t-green t-big">front</text>
+        <text x="695" y="146" class="t-red t-big">back</text>
+        <text x="410" y="265" class="t-pen t-sm">./data → /data/db (volume)</text>
+      </g>
+    </svg>
+  </div>
+<pre><span class="k">docker</span> network create frontend              <span class="c"># standart driver: bridge</span>
+<span class="k">docker</span> network connect frontend proxy
+<span class="k">docker</span> network inspect | ls | disconnect | rm | prune</pre>
+
+  <h3><span class="n">6.</span>Docker Compose</h3>
+  <p>Ko'p konteynerli ilovani <b>bitta YAML faylda</b> tasvirlab, bitta buyruq bilan ko'tarish. Yuqoridagi sxemaning kodi (qisqartirilgan):</p>
+<pre><span class="k">services:</span>
+  proxy:
+    build: ./proxy
+    ports: [<span class="s">"80:80"</span>]
+    depends_on:
+      api: { condition: service_healthy }
+    networks: [front, back]
+  webhost:
+    build: ./frontend-docker
+    networks: [front]
+  api:
+    build: ./backend-docker
+    environment: [PORT=4000, DB_URL=db, DB_NAME=customers]
+    healthcheck:
+      test: curl localhost:4000/api/ping
+      interval: 10s
+    networks: [back]
+  db:
+    image: mongo:4
+    volumes: [<span class="s">"./data:/data/db"</span>]
+    networks: [back]
+<span class="k">networks:</span>
+  front: {}
+  back: {}</pre>
+<pre><span class="k">docker</span> compose up -d --build    <span class="c"># hammasini yig'ib ko'tarish</span>
+<span class="k">docker</span> compose ps | logs -f | exec api sh
+<span class="k">docker</span> compose down -v          <span class="c"># to'xtatish va volume'larni ham o'chirish</span></pre>
+
+  <h3><span class="n">7.</span>Registry va avtomatik build</h3>
+  <ul>
+    <li><b>Docker Hub</b>: <span class="term">docker login</span> → <span class="term">docker push</span>. Rasmiy (official) image'lar: nginx, node, mongo, postgres…</li>
+    <li>O'z registry'ing: <span class="term">docker run -d -p 5000:5000 registry:2</span>, keyin <span class="term">localhost:5000/myapp:1.0</span> ga push.</li>
+    <li><b>Avtomatik build</b>: GitHub'ga push qilinganda image o'zi yig'iladi (Docker Hub Automated Builds, GitHub Actions).</li>
+  </ul>
+
+  <h3><span class="n">8.</span>Resurslar, sog'liq va kuzatuv</h3>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Bayroq / buyruq</th><th>Nima qiladi</th></tr></thead>
+      <tbody>
+        <tr><td>-m 10m</td><td>RAM'ning qattiq chegarasi (hard limit)</td></tr>
+        <tr><td>--memory-reservation 5m</td><td>Yumshoq chegara (soft limit, baseline)</td></tr>
+        <tr><td>--cpus 1.5</td><td>CPU chegarasi</td></tr>
+        <tr><td>--restart unless-stopped</td><td>Qulasa yoki server qayta yoqilsa, o'zi ko'tariladi</td></tr>
+        <tr><td>--health-cmd …</td><td>Holat: starting → healthy / unhealthy</td></tr>
+        <tr><td>docker stats</td><td>Jonli CPU / RAM / tarmoq sarfi</td></tr>
+        <tr><td>docker events</td><td>Daemon hodisalari oqimi</td></tr>
+        <tr><td>docker system prune -a</td><td>Ishlatilmayotgan hamma narsani tozalash</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3><span class="n">9.</span>Orkestratsiya va qo'shimcha vositalar</h3>
+  <div class="box-grid">
+    <div class="card"><h4>Docker Swarm</h4><p>Bir nechta serverni bitta klasterga birlashtiradi: <span class="term">docker service</span>, replikalar, overlay tarmoq, round-robin yuklama taqsimoti.</p></div>
+    <div class="card"><h4>Kubernetes</h4><p>Katta tizimlar uchun orkestrator. Docker yasagan image'larni to'g'ridan-to'g'ri ishlatadi.</p></div>
+    <div class="card"><h4>Buildx</h4><p>Bir nechta arxitektura uchun build (amd64 + arm64), build keshini tashqarida saqlash.</p></div>
+    <div class="card"><h4>Docker Scout</h4><p>Image ichidagi kutubxonalardagi zaifliklarni (CVE) topadi.</p></div>
+    <div class="card"><h4>Docker Desktop</h4><p>Windows/macOS uchun GUI: konteynerlar, image'lar, volume'lar, kengaytmalar.</p></div>
+    <div class="card"><h4>docker init</h4><p>Loyiha uchun tayyor Dockerfile, compose.yaml va .dockerignore yaratib beradi.</p></div>
+  </div>
+
+  <h2 style="margin-top:30px">Shpargalka</h2>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Buyruq</th><th>Ma'nosi</th></tr></thead>
+      <tbody>
+        <tr><td>docker run -d -p 80:80 nginx</td><td>Konteynerni fonda ishga tushirish</td></tr>
+        <tr><td>docker ps / ps -a</td><td>Ishlayotgan / barcha konteynerlar</td></tr>
+        <tr><td>docker logs -f &lt;nom&gt;</td><td>Loglar</td></tr>
+        <tr><td>docker exec -it &lt;nom&gt; sh</td><td>Konteyner ichiga kirish</td></tr>
+        <tr><td>docker stop / start / rm</td><td>To'xtatish / yoqish / o'chirish</td></tr>
+        <tr><td>docker build -t nom:teg .</td><td>Dockerfile'dan image yig'ish</td></tr>
+        <tr><td>docker images</td><td>Lokal image'lar</td></tr>
+        <tr><td>docker pull / push</td><td>Registry'dan olish / yuborish</td></tr>
+        <tr><td>docker volume ls</td><td>Volume'lar ro'yxati</td></tr>
+        <tr><td>docker network ls</td><td>Tarmoqlar ro'yxati</td></tr>
+        <tr><td>docker compose up -d</td><td>Butun stekni ko'tarish</td></tr>
+        <tr><td>docker system prune</td><td>Keraksizlarni tozalash</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="row" style="margin-top:18px">
+    <div>
+      <h3 style="margin-top:0">Xulosa</h3>
+      <ol>
+        <li>Docker ilovani muhiti bilan birga <b>konteynerga</b> qadoqlaydi.</li>
+        <li>Konteyner — VM emas, host yadrosini bo'lishadigan <b>izolyatsiyalangan jarayon</b> (namespaces + cgroups).</li>
+        <li>Arxitektura: <b>CLI → REST API → dockerd → containerd → runc</b>; image'lar registry'dan keladi.</li>
+        <li>Imkoniyatlar: image, Dockerfile, volumes, network, compose, registry, limitlar, Swarm.</li>
+      </ol>
+    </div>
+    <div class="sticky">Keyingi qadam:<br>1) o'z loyihangga Dockerfile yoz<br>2) compose bilan DB qo'sh<br>3) Kubernetes'ni o'rgan</div>
+  </div>
+  <p class="sign">— konspekt tugadi ✓</p>
+</section>
+
+
+<!-- ============================ AMALIYOTLAR ============================ -->
+<section class="sheet" id="amaliyotlar">
+  <div class="sheet-head"><span class="sheet-no"></span><span>IV bo'lim: Mustahkamlash</span></div>
+  <h2>Yaxshi amaliyotlar va xatolar</h2>
+
+  <div class="row">
+    <div>
+      <h3 class="green" style="margin-top:6px">✓ Shunday qil</h3>
+      <ul>
+        <li><b>Bitta konteyner — bitta vazifa.</b> Veb-server, API va baza alohida konteynerlarda.</li>
+        <li>Kichik asos: <span class="term">alpine</span>, <span class="term">-slim</span>, <span class="term">distroless</span>.</li>
+        <li><b>Multi-stage build</b> bilan kompilyatorlarni yakuniy image'dan olib tashla.</li>
+        <li>Teglarni aniq qo'y: <span class="term">node:20.11-alpine</span>, <span class="term">latest</span> emas.</li>
+        <li>Kam o'zgaradigan qadamlarni Dockerfile tepasiga yoz (kesh ishlaydi).</li>
+        <li><span class="term">.dockerignore</span> yoz.</li>
+        <li><span class="term">USER</span> bilan root bo'lmagan foydalanuvchida ishlat.</li>
+        <li>Sozlamalarni <b>ENV</b> orqali ber, image'ni muhitga bog'lama.</li>
+        <li>Loglarni <b>stdout/stderr</b>ga yoz.</li>
+        <li>Ma'lumotni <b>volume</b>da saqla.</li>
+        <li><span class="term">HEALTHCHECK</span> va resurs limitlarini qo'y.</li>
+      </ul>
+    </div>
+    <div>
+      <h3 class="red" style="margin-top:6px;color:var(--red)">✗ Bunday qilma</h3>
+      <ul>
+        <li>Konteyner ichiga SSH o'rnatish — buning uchun <span class="term">docker exec</span> bor.</li>
+        <li>Ishlab turgan konteynerni qo'lda «tuzatish» — keyingi qayta ishga tushirishda hammasi yo'qoladi.</li>
+        <li>Ma'lumotlar bazasini volume'siz ishlatish.</li>
+        <li>Har bir buyruqni alohida <span class="term">RUN</span>ga yozish: qatlamlar ko'payadi.</li>
+        <li><span class="term">apt-get update</span>ni <span class="term">install</span>dan alohida RUN'da yozish (eskirgan kesh xavfi).</li>
+        <li>Parollarni image ichiga yozish.</li>
+        <li><span class="term">node_modules</span>ni host'dan COPY qilish.</li>
+        <li><span class="term">docker commit</span> bilan production image yasash.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Yomon va yaxshi Dockerfile</h3>
+  <div class="row">
+    <div>
+<pre><span class="c"># ✗ 1.1 GB, har safar sekin</span>
+<span class="k">FROM</span> node:latest
+<span class="k">COPY</span> . /app
+<span class="k">WORKDIR</span> /app
+<span class="k">RUN</span> npm install
+<span class="k">CMD</span> npm start</pre>
+    </div>
+    <div>
+<pre><span class="c"># ✓ ~150 MB, kesh ishlaydi</span>
+<span class="k">FROM</span> node:20-alpine
+<span class="k">WORKDIR</span> /app
+<span class="k">COPY</span> package*.json ./
+<span class="k">RUN</span> npm ci --omit=dev
+<span class="k">COPY</span> . .
+<span class="k">USER</span> node
+<span class="k">CMD</span> [<span class="s">"node"</span>, <span class="s">"server.js"</span>]</pre>
+    </div>
+  </div>
+  <p class="cap">O'ngdagida kod o'zgarsa ham <span class="term">npm ci</span> qatlami keshdan olinadi, chunki <span class="term">package.json</span> o'zgarmagan.</p>
+
+  <h3>12-factor tamoyillaridan konteynerga oidlari</h3>
+  <ol>
+    <li><b>Konfiguratsiya muhitda</b> — bitta image dev, test va prod'da ishlaydi.</li>
+    <li><b>Jarayonlar holatsiz</b> — holat bazada yoki volume'da.</li>
+    <li><b>Tez ishga tushish va toza to'xtash</b> — SIGTERM'ni ushla.</li>
+    <li><b>Loglar — hodisalar oqimi</b> — stdout'ga yoz, yig'ishni tizim qiladi.</li>
+    <li><b>Dev va prod o'xshash</b> — compose bilan lokalda ham xuddi shu servislar.</li>
+  </ol>
+  <div class="sticky l">Muammo bo'lsa tartib: <b>docker ps -a</b> → <b>docker logs</b> → <b>docker inspect</b> (State, ExitCode) → <b>docker exec</b> ichiga kirib tekshirish.</div>
+</section>
+
+<!-- ============================ TEST ============================ -->
+<section class="sheet" id="test">
+  <div class="sheet-head"><span class="sheet-no"></span><span>IV bo'lim: Mustahkamlash</span></div>
+  <h2>O'zingni tekshir</h2>
+  <p class="pencil">Avval o'zing javob ber, keyin savolni bosib to'g'ri javobni ko'r.</p>
+  <div class="quiz">
+    <details><summary>Konteyner va virtual mashinaning asosiy farqi nima?</summary><p>VM apparat darajasida virtualizatsiya qiladi va har birida to'liq mehmon OT bor. Konteyner OT darajasida izolyatsiya qiladi va host yadrosini bo'lishadi, shuning uchun yengil va tez.</p></details>
+    <details><summary>Image va konteyner o'rtasidagi bog'liqlik qanday?</summary><p>Image — read-only shablon (sinf). Konteyner — undan yaratilgan, ustiga R/W qatlam qo'shilgan va ishlayotgan nusxa (ob'ekt). Bitta image'dan ko'p konteyner bo'ladi.</p></details>
+    <details><summary>Konteyner izolyatsiyasini Linux yadrosining qaysi ikki mexanizmi ta'minlaydi?</summary><p><b>Namespaces</b> (nimani ko'radi) va <b>cgroups</b> (qancha resurs ishlatadi).</p></details>
+    <details><summary>docker, dockerd, containerd va runc — kim nima qiladi?</summary><p>docker — mijoz (CLI); dockerd — daemon, API'ni qabul qiladi; containerd — konteynerlar hayot siklini boshqaradi; runc — yadro bilan gaplashib jarayonni ishga tushiradi.</p></details>
+    <details><summary>overlay2 da upperdir va lowerdir nima?</summary><p>lowerdir — image qatlamlari (faqat o'qish). upperdir — konteynerning yoziladigan qatlami. merged — ikkalasining birlashgan ko'rinishi.</p></details>
+    <details><summary>Nega <span class="term">RUN rm katta.zip</span> image hajmini kamaytirmaydi?</summary><p>Fayl oldingi qatlamda qoladi; yangi qatlam faqat «whiteout» bilan uni yashiradi. Yuklash va o'chirishni bitta RUN ichida qilish kerak.</p></details>
+    <details><summary>Konteyner exit 137 bilan to'xtadi. Sababi nima bo'lishi mumkin?</summary><p>137 = 128 + 9, ya'ni SIGKILL. Ko'pincha OOM (xotira limiti) yoki <span class="term">docker stop</span> vaqti tugagani. <span class="term">.State.OOMKilled</span> ni tekshir.</p></details>
+    <details><summary>Nega <span class="term">CMD ["node","app.js"]</span> ko'rinishi <span class="term">CMD node app.js</span> dan yaxshi?</summary><p>Exec formada node PID 1 bo'ladi va SIGTERM'ni oladi. Shell formada PID 1 = sh, u signalni uzatmaydi va konteyner 10 soniyadan keyin majburan o'ldiriladi.</p></details>
+    <details><summary><span class="term">-p 8080:80</span> da qaysi raqam host'niki?</summary><p>Chapdagi — host (8080), o'ngdagi — konteyner (80). Ichkarida iptables DNAT qoidasi ishlaydi.</p></details>
+    <details><summary>Nega standart <span class="term">bridge</span> tarmog'ida konteynerlar bir-birini nomi bilan topolmaydi?</summary><p>Ichki DNS (127.0.0.11) faqat foydalanuvchi yaratgan tarmoqlarda ishlaydi. <span class="term">docker network create</span> bilan tarmoq yarat.</p></details>
+    <details><summary>Volume, bind mount va tmpfs farqi?</summary><p>Volume — Docker boshqaradigan joy; bind mount — host'dagi istalgan papka; tmpfs — faqat RAM'da, diskka yozilmaydi.</p></details>
+    <details><summary>Nega docker.sock'ni konteynerga ulash xavfli?</summary><p>Socket orqali Docker API'ga to'liq kirish mumkin, ya'ni <span class="term">--privileged</span> konteyner ochib, host'ni boshqarish mumkin. Bu amalda host'da root huquqi.</p></details>
+    <details><summary>Teg va digest farqi nima?</summary><p>Teg o'zgaruvchan yorliq (<span class="term">:1.27</span>), digest esa mazmunning sha256 xeshi va o'zgarmas.</p></details>
+    <details><summary><span class="term">docker run</span> = qaysi ikki buyruq?</summary><p><span class="term">docker create</span> + <span class="term">docker start</span> (kerak bo'lsa oldin <span class="term">pull</span> ham).</p></details>
+  </div>
+  <p class="sign">Ball: ___ / 14</p>
+</section>
+
+<!-- ============================ LUG'AT ============================ -->
+<section class="sheet" id="lugat">
+  <div class="sheet-head"><span class="sheet-no"></span><span>IV bo'lim: Mustahkamlash</span></div>
+  <h2>Lug'at</h2>
+  <dl class="glossary">
+    <dt>Container (konteyner)</dt><dd>Izolyatsiya qilingan va resurslari cheklangan jarayon; image'ning ishlayotgan nusxasi.</dd>
+    <dt>Image (obraz)</dt><dd>Konteyner uchun read-only shablon; qatlamlar + config.</dd>
+    <dt>Layer (qatlam)</dt><dd>Fayl tizimi o'zgarishlarining arxivi; Dockerfile'dagi bir buyruq natijasi.</dd>
+    <dt>Dockerfile</dt><dd>Image yig'ish retsepti.</dd>
+    <dt>Tag (teg)</dt><dd>Image versiyasi yorlig'i: <span class="term">nginx:1.27</span>.</dd>
+    <dt>Digest</dt><dd>Mazmunning sha256 xeshi; o'zgarmas identifikator.</dd>
+    <dt>Registry</dt><dd>Image'lar ombori (Docker Hub, GHCR, shaxsiy).</dd>
+    <dt>Repository</dt><dd>Registry ichidagi bitta image nomi va uning teglari.</dd>
+    <dt>Docker Engine</dt><dd>dockerd + API + CLI.</dd>
+    <dt>Daemon (dockerd)</dt><dd>Fonda ishlaydigan Docker serveri.</dd>
+    <dt>containerd</dt><dd>Konteyner runtime'i, hayot siklini boshqaradi.</dd>
+    <dt>runc</dt><dd>OCI runtime; konteyner jarayonini yaratadi.</dd>
+    <dt>shim</dt><dd>Konteyner va containerd orasidagi vositachi jarayon.</dd>
+    <dt>OCI</dt><dd>Open Container Initiative: image, runtime va distribution standartlari.</dd>
+    <dt>Namespace</dt><dd>Yadro resurslarining alohida ko'rinishi (pid, net, mnt, uts, ipc, user, cgroup).</dd>
+    <dt>cgroup</dt><dd>Control group: resurs limitlari va hisobi.</dd>
+    <dt>Capability</dt><dd>Root huquqlarining bir bo'lagi (NET_BIND_SERVICE va h.k.).</dd>
+    <dt>Seccomp</dt><dd>Syscall'larni filtrlash mexanizmi.</dd>
+    <dt>UFS / OverlayFS</dt><dd>Qatlamlarni bitta fayl tizimiga birlashtiruvchi texnologiya.</dd>
+    <dt>overlay2</dt><dd>Docker'ning standart storage driver'i.</dd>
+    <dt>Copy-on-Write</dt><dd>Faylni faqat o'zgartirilganda yuqori qatlamga ko'chirish.</dd>
+    <dt>Whiteout</dt><dd>Pastki qatlamdagi faylni «o'chirilgan» deb belgilovchi maxsus fayl.</dd>
+    <dt>Volume</dt><dd>Docker boshqaradigan doimiy ma'lumot saqlash joyi.</dd>
+    <dt>Bind mount</dt><dd>Host papkasini konteynerga ulash.</dd>
+    <dt>tmpfs</dt><dd>Faqat RAM'dagi vaqtinchalik fayl tizimi.</dd>
+    <dt>veth pair</dt><dd>Konteyner va host'ni bog'lovchi virtual kabel.</dd>
+    <dt>docker0</dt><dd>Standart bridge tarmog'ining host'dagi virtual kommutatori.</dd>
+    <dt>Port mapping</dt><dd><span class="term">-p host:konteyner</span>, iptables DNAT orqali.</dd>
+    <dt>PID 1</dt><dd>Konteynerning asosiy jarayoni; u tugasa, konteyner to'xtaydi.</dd>
+    <dt>tini / --init</dt><dd>Signallarni uzatuvchi va zombilarni tozalovchi mini-init.</dd>
+    <dt>OOM killer</dt><dd>Xotira tugaganda jarayonni o'ldiruvchi yadro mexanizmi.</dd>
+    <dt>Healthcheck</dt><dd>Konteyner «sog'»ligini davriy tekshirish.</dd>
+    <dt>Compose</dt><dd>Ko'p konteynerli ilovani YAML'da tasvirlash vositasi.</dd>
+    <dt>Swarm / Kubernetes</dt><dd>Ko'p serverli konteyner orkestratorlari.</dd>
+    <dt>Multi-stage build</dt><dd>Bir necha FROM'li Dockerfile; yakuniy image faqat natijani oladi.</dd>
+    <dt>Rootless</dt><dd>Docker'ni root huquqisiz ishlatish rejimi.</dd>
+  </dl>
+  <p class="sign">— daftar tugadi. Omad! ✓</p>
+</section>
+
+</main>
+
+</body>
+</html>
